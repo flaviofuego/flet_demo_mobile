@@ -12,19 +12,20 @@ class Peer:
     scores: dict[str, int] = field(default_factory=dict)  # criterion_id → 2..5
 
 
+# Module-level constant defined before class so it can be used as default
+_LEVEL_LABELS: tuple[str, ...] = ("Necesita Mejorar", "Adecuado", "Bueno", "Excelente")
+
+
 @dataclass
 class EvalCriterion:
     id: str
     label: str
 
-    DEFAULTS: ClassVar[list["EvalCriterion"]] = []
-    _LEVEL_LABELS: ClassVar[tuple[str, ...]] = (
-        "Necesita Mejorar", "Adecuado", "Bueno", "Excelente"
-    )
+    DEFAULTS: ClassVar[list["EvalCriterion"]]
 
     @staticmethod
     def level_for(score: int) -> str:
-        return EvalCriterion._LEVEL_LABELS[score - 2]
+        return _LEVEL_LABELS[score - 2]
 
 
 EvalCriterion.DEFAULTS = [

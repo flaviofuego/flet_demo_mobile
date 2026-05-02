@@ -71,3 +71,38 @@ def test_group_category_counts():
     )
     assert cat.group_count == 2
     assert cat.member_count == 3
+
+
+def test_student_from_row():
+    from src.domain.models.student import Student
+    row = {"id": 5, "name": "Ana López", "email": "ana@uni.edu", "initials": "AL"}
+    s = Student.from_row(row)
+    assert s.id == "5"
+    assert s.name == "Ana López"
+    assert s.email == "ana@uni.edu"
+    assert s.initials == "AL"
+
+
+def test_teacher_from_row():
+    from src.domain.models.teacher import Teacher
+    row = {"id": 3, "name": "Prof. García", "email": "garcia@uni.edu", "initials": "PG"}
+    t = Teacher.from_row(row)
+    assert t.id == "3"
+    assert t.name == "Prof. García"
+
+
+def test_course_model_from_row():
+    from src.domain.models.course import CourseModel
+    row = {"id": 1, "teacher_id": 2, "name": "Ing. Software", "code": "IS101", "created_at": 1000000}
+    c = CourseModel.from_row(row)
+    assert c.id == 1
+    assert c.teacher_id == 2
+    assert c.code == "IS101"
+
+
+def test_auth_login_result_home_route():
+    from src.domain.models.auth_login_result import AuthLoginResult, AppUserRole
+    r_teacher = AuthLoginResult(role=AppUserRole.teacher)
+    assert r_teacher.home_route == "/teacher/dash"
+    r_student = AuthLoginResult(role=AppUserRole.student)
+    assert r_student.home_route == "/student/courses"
