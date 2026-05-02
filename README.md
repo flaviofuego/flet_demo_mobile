@@ -1,6 +1,6 @@
-# flet_demo_mobile
+# EvalUn
 
-A Flet mobile application built with **Clean Architecture** principles.
+**EvalUn** — Evaluación entre pares en Flet (peerUn Python port). A peer-assessment mobile application built with **Clean Architecture** principles.
 
 ## Architecture overview
 

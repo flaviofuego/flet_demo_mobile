@@ -3,9 +3,9 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "flet_demo_mobile"
+name = "evalun"
 version = "0.1.0"
-description = "Flet mobile app with clean architecture"
+description = "EvalUn — Evaluación entre pares en Flet (peerUn Python port)"
 requires-python = ">=3.11"
 dependencies = [
     "flet>=0.23.0",

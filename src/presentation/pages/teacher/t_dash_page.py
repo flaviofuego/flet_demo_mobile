@@ -168,7 +168,7 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         ],
         on_change=lambda e: [
             page.go("/teacher/dash"),
-            page.go("/teacher/profile"),
+            page.go("/teacher/import"),
             page.go("/teacher/courses"),
         ][e.control.selected_index],
     )
