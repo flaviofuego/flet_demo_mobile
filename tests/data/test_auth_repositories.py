@@ -61,7 +61,7 @@ def test_unified_teacher_first(db):
     unified = UnifiedAuthRepositoryImpl(s_repo, t_repo)
     # Register as teacher and student with same email
     t_repo.register("Prof.", "shared@uni.edu", "pass")
-    s_repo.register("Student", "shared@uni.edu", "pass")  # will fail due to unique constraint
+    s_repo.register("Student", "shared@uni.edu", "pass")
     # Actually use different emails for clarity
     t_repo2 = TeacherAuthRepositoryImpl(db)
     t_repo2.register("Prof.", "teacher@uni.edu", "pass")

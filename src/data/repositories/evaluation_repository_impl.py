@@ -1,19 +1,11 @@
 from __future__ import annotations
 from datetime import datetime, timedelta
 from src.data.services.database_service import DatabaseService
+from src.data.utils import build_initials as _build_initials
 from src.domain.models.evaluation import Evaluation
 from src.domain.models.peer_evaluation import Peer, CriterionResult, EvalCriterion
 from src.domain.models.teacher_data import GroupResult, StudentResult
 from src.domain.repositories.i_evaluation_repository import IEvaluationRepository
-
-
-def _build_initials(name: str) -> str:
-    parts = [p for p in name.strip().split() if p]
-    if not parts:
-        return "?"
-    if len(parts) == 1:
-        return parts[0][0].upper()
-    return (parts[0][0] + parts[-1][0]).upper()
 
 
 def _row_to_eval(row: dict) -> Evaluation:

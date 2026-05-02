@@ -1,21 +1,8 @@
 from __future__ import annotations
-import hashlib
 from src.data.services.database_service import DatabaseService
+from src.data.utils import hash_password as _hash, build_initials as _build_initials
 from src.domain.models.teacher import Teacher
 from src.domain.repositories.i_teacher_auth_repository import ITeacherAuthRepository
-
-
-def _hash(password: str) -> str:
-    return hashlib.sha256(password.encode("utf-8")).hexdigest()
-
-
-def _build_initials(name: str) -> str:
-    parts = [p for p in name.strip().split() if p]
-    if not parts:
-        return "?"
-    if len(parts) == 1:
-        return parts[0][0].upper()
-    return (parts[0][0] + parts[-1][0]).upper()
 
 
 class TeacherAuthRepositoryImpl(ITeacherAuthRepository):
