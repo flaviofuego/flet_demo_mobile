@@ -7,7 +7,6 @@ layer) and ``User`` (domain layer).
 
 from __future__ import annotations
 
-from src.core.error.exceptions import EntityNotFoundException
 from src.data.datasources.user_local_datasource import UserLocalDataSource
 from src.data.models.user_model import UserModel
 from src.domain.entities.user import User
