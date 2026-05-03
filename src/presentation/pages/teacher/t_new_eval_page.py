@@ -28,7 +28,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
     def _selector_row(label: str, on_tap, disabled=False) -> ft.Container:
         return ft.Container(
-            bgcolor=TK_SURFACE, border_radius=12,
+            bgcolor=TK_SURFACE, border_radius=16,
             border=ft.Border.all(1, TK_BORDER),
             padding=ft.padding.symmetric(horizontal=16, vertical=16),
             on_click=None if disabled else on_tap,
@@ -161,7 +161,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             icon_color = TK_GOLD if val == "private" else TK_TEXT_FAINT
             text_color = TK_GOLD if (val == "private" and sel) else TK_TEXT
             return ft.Container(
-                bgcolor=TK_SURFACE, border_radius=14,
+                bgcolor=TK_SURFACE, border_radius=16,
                 border=ft.Border.all(1, TK_GOLD if sel else TK_BORDER),
                 padding=14, margin=ft.margin.only(bottom=8),
                 on_click=lambda _, v=val: _pick_vis(v),
@@ -179,6 +179,23 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             )
 
         hint = "Selecciona una categoría primero" if vm.selected_category_id is None else ""
+
+        disabled = vm.is_loading or vm.selected_category_id is None
+        launch_btn = ft.GestureDetector(
+            on_tap=(lambda _: None) if disabled else _on_create,
+            content=ft.Container(
+                expand=True,
+                bgcolor=f"{TK_GOLD}55" if disabled else TK_GOLD,
+                border_radius=30,
+                padding=ft.padding.symmetric(vertical=14),
+                alignment=ft.Alignment(0, 0),
+                content=ft.Text(
+                    "Creando..." if vm.is_loading else "Lanzar evaluación",
+                    size=15, weight=ft.FontWeight.W_700,
+                    color=TK_BACKGROUND, text_align=ft.TextAlign.CENTER,
+                ),
+            ),
+        )
 
         return ft.ListView(
             expand=True,
@@ -213,17 +230,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                           ft.Icons.LOCK_OUTLINE, "private"),
                 ft.Container(height=8),
                 error_text,
-                ft.ElevatedButton(
-                    "Lanzar evaluación" if not vm.is_loading else "Creando...",
-                    expand=True,
-                    disabled=vm.is_loading,
-                    style=ft.ButtonStyle(
-                        bgcolor=TK_GOLD, color=TK_BACKGROUND,
-                        shape=ft.RoundedRectangleBorder(radius=30),
-                        padding=ft.padding.symmetric(vertical=14),
-                    ),
-                    on_click=_on_create,
-                ),
+                launch_btn,
                 ft.Container(height=4),
                 ft.Text(hint, size=11, color=TK_TEXT_FAINT,
                         text_align=ft.TextAlign.CENTER, visible=bool(hint)),

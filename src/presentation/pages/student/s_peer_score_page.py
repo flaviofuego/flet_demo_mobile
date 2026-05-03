@@ -61,15 +61,26 @@ def s_peer_score_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             ]),
         )
 
-    save_btn = ft.ElevatedButton(
-        "Guardar evaluación",
-        expand=True,
-        style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF",
-                             shape=ft.RoundedRectangleBorder(radius=30),
-                             padding=ft.padding.symmetric(vertical=14)),
-        disabled=not vm.all_criteria_scored,
-        on_click=lambda _: (vm.save_peer_score(), page.go("/student/peers")),
+    _save_disabled = [not vm.all_criteria_scored]
+    save_btn_label = ft.Text(
+        "Guardar evaluación", size=15, weight=ft.FontWeight.W_700,
+        color="#FFFFFF", text_align=ft.TextAlign.CENTER,
     )
+    save_btn_box = ft.Container(
+        expand=True,
+        bgcolor=f"{SK_PRIMARY}55" if _save_disabled[0] else SK_PRIMARY,
+        border_radius=30,
+        padding=ft.padding.symmetric(vertical=14),
+        alignment=ft.Alignment(0, 0),
+        content=save_btn_label,
+    )
+    save_btn = ft.GestureDetector(content=save_btn_box)
+
+    def _on_save(_) -> None:
+        vm.save_peer_score()
+        page.go("/student/peers")
+
+    save_btn.on_tap = None if _save_disabled[0] else _on_save
 
     def _build_body() -> ft.Control:
         peer = vm.current_peer
@@ -77,7 +88,9 @@ def s_peer_score_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.Text("Selecciona un compañero primero", color=SK_TEXT_FAINT))
 
-        save_btn.disabled = not vm.all_criteria_scored
+        disabled = not vm.all_criteria_scored
+        save_btn.on_tap      = None if disabled else _on_save
+        save_btn_box.bgcolor = f"{SK_PRIMARY}55" if disabled else SK_PRIMARY
 
         criterion_rows = [
             _criterion_row(c, CRITERION_COLORS[i])

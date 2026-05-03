@@ -28,13 +28,6 @@ def login_page(
     def _accent()  -> str: return TK_GOLD         if is_dark[0] else SK_PRIMARY
     def _icon_bg() -> str: return f"{TK_GOLD}33"  if is_dark[0] else SK_PRIMARY_LIGHT
 
-    def _pill_style(bg: str, fg: str) -> ft.ButtonStyle:
-        return ft.ButtonStyle(
-            bgcolor=bg, color=fg,
-            shape=ft.RoundedRectangleBorder(radius=30),
-            padding=ft.padding.symmetric(vertical=14),
-        )
-
     email_field = ft.TextField(
         hint_text="Correo institucional",
         prefix_icon=ft.Icons.MAIL_OUTLINE_ROUNDED,
@@ -54,21 +47,32 @@ def login_page(
         border_radius=12,
     )
     error_text = ft.Text("", color="#EF4444", size=12, visible=False)
-    login_btn  = ft.ElevatedButton(
-        "Iniciar sesión",
-        expand=True,
-        style=_pill_style(_accent(), TK_BACKGROUND),
+
+    login_label = ft.Text(
+        "Iniciar sesión", size=15, weight=ft.FontWeight.W_700,
+        color=TK_BACKGROUND, text_align=ft.TextAlign.CENTER,
     )
-    register_btn = ft.ElevatedButton(
-        "Crear cuenta",
-        expand=True,
-        style=ft.ButtonStyle(
-            bgcolor=_surf(), color=_text(),
-            shape=ft.RoundedRectangleBorder(radius=30),
-            side=ft.BorderSide(1, _border()),
-            padding=ft.padding.symmetric(vertical=14),
-        ),
+    login_box = ft.Container(
+        expand=True, bgcolor=_accent(), border_radius=30,
+        padding=ft.padding.symmetric(vertical=14),
+        alignment=ft.Alignment(0, 0),
+        content=login_label,
     )
+    login_btn = ft.GestureDetector(content=login_box)
+
+    register_label = ft.Text(
+        "Crear cuenta", size=15, weight=ft.FontWeight.W_700,
+        color=_text(), text_align=ft.TextAlign.CENTER,
+    )
+    register_box = ft.Container(
+        expand=True, bgcolor=ft.Colors.TRANSPARENT, border_radius=30,
+        border=ft.Border.all(1, _border()),
+        padding=ft.padding.symmetric(vertical=14),
+        alignment=ft.Alignment(0, 0),
+        content=register_label,
+    )
+    register_btn = ft.GestureDetector(content=register_box)
+
     theme_btn = ft.IconButton(
         icon=ft.Icons.LIGHT_MODE_ROUNDED if is_dark[0] else ft.Icons.DARK_MODE_ROUNDED,
         icon_color=_faint(),
@@ -90,7 +94,10 @@ def login_page(
     def _notify() -> None:
         error_text.value   = login_vm.auth_error
         error_text.visible = bool(login_vm.auth_error)
-        login_btn.disabled = login_vm.is_loading
+        loading = login_vm.is_loading
+        login_btn.on_tap       = (lambda _: None) if loading else _on_login
+        login_box.bgcolor      = f"{_accent()}66" if loading else _accent()
+        login_label.value      = "Cargando..." if loading else "Iniciar sesión"
         page.update()
 
     login_vm._notify = _notify
@@ -124,26 +131,23 @@ def login_page(
         password_field.focused_border_color = _accent()
         password_field.border_color         = _border()
         password_field.bgcolor              = _surf()
-        login_btn.style    = _pill_style(_accent(), TK_BACKGROUND)
-        register_btn.style = ft.ButtonStyle(
-            bgcolor=_surf(), color=_text(),
-            shape=ft.RoundedRectangleBorder(radius=30),
-            side=ft.BorderSide(1, _border()),
-            padding=ft.padding.symmetric(vertical=14),
-        )
-        icon_box.bgcolor           = _icon_bg()
-        icon_box.content.color     = _accent()
-        card.bgcolor               = _surf()
-        card.border                = ft.Border.all(1, _border())
-        title_text.color           = _text()
-        no_account_text.color      = _faint()
-        sso_text.color             = _faint()
-        view.bgcolor               = _bg()
+        login_box.bgcolor                   = _accent()
+        login_label.color                   = TK_BACKGROUND
+        register_box.border                 = ft.Border.all(1, _border())
+        register_label.color                = _text()
+        icon_box.bgcolor                    = _icon_bg()
+        icon_box.content.color              = _accent()
+        card.bgcolor                        = _surf()
+        card.border                         = ft.Border.all(1, _border())
+        title_text.color                    = _text()
+        no_account_text.color               = _faint()
+        sso_text.color                      = _faint()
+        view.bgcolor                        = _bg()
         page.update()
 
-    login_btn.on_click    = _on_login
-    register_btn.on_click = _on_register
-    theme_btn.on_click    = _toggle_theme
+    login_btn.on_tap    = _on_login
+    register_btn.on_tap = _on_register
+    theme_btn.on_click  = _toggle_theme
 
     card.content = ft.Column(
         scroll=ft.ScrollMode.AUTO, expand=True, spacing=12,

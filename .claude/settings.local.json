@@ -17,7 +17,11 @@
       "Bash(python -c \"import flet as ft; import inspect; sig = inspect.signature\\(ft.BottomSheet.__init__\\); print\\(list\\(sig.parameters.keys\\(\\)\\)\\)\")",
       "Bash(python -c \"import flet as ft; print\\(hasattr\\(ft, 'GestureDetector'\\)\\); import inspect; sig = inspect.signature\\(ft.ButtonStyle.__init__\\); print\\(list\\(sig.parameters.keys\\(\\)\\)[:15]\\)\")",
       "Bash(python -c \"import flet as ft; print\\(ft.Colors.TRANSPARENT\\)\")",
-      "Bash(python -m py_compile src/presentation/pages/auth/login_page.py src/presentation/pages/auth/register_page.py src/presentation/pages/teacher/t_dash_page.py src/presentation/pages/teacher/t_import_page.py src/presentation/pages/teacher/t_course_manage_page.py src/presentation/pages/teacher/t_new_eval_page.py src/presentation/pages/teacher/t_results_page.py src/presentation/pages/student/s_courses_page.py src/presentation/pages/student/s_peers_page.py src/presentation/pages/student/s_peer_score_page.py)"
+      "Bash(python -m py_compile src/presentation/pages/auth/login_page.py src/presentation/pages/auth/register_page.py src/presentation/pages/teacher/t_dash_page.py src/presentation/pages/teacher/t_import_page.py src/presentation/pages/teacher/t_course_manage_page.py src/presentation/pages/teacher/t_new_eval_page.py src/presentation/pages/teacher/t_results_page.py src/presentation/pages/student/s_courses_page.py src/presentation/pages/student/s_peers_page.py src/presentation/pages/student/s_peer_score_page.py)",
+      "Bash(Get-ChildItem -Recurse -Force -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object FullName)",
+      "Bash(Find-String \"peerUn|peerun|peer_un|propuesta|jsx|tsx\")",
+      "PowerShell(cd \"e:\\\\Repos Git\\\\flet_demo_mobile\" && Get-ChildItem -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { \\($_.Name -match \"peerUn|peerun|peer_un|propuesta|\\\\.jsx|\\\\.tsx|screenshot\" -or $_.FullName -match \"peerUn|peerun|peer_un|propuesta|screenshot\"\\) -and $_.FullName -notmatch \"\\\\.git\" } | Select-Object FullName | Sort-Object FullName)"
     ]
   }
 }

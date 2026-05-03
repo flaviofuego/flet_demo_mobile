@@ -47,15 +47,18 @@ def register_page(
     confirm_field = _tf_style("Confirmar contraseña",  ft.Icons.LOCK_OUTLINE_ROUNDED, password=True)
     error_text    = ft.Text("", color="#EF4444", size=12, visible=False)
 
-    register_btn  = ft.ElevatedButton(
-        "Crear cuenta de estudiante",
-        expand=True,
-        style=ft.ButtonStyle(
-            bgcolor=_accent(), color=TK_BACKGROUND,
-            shape=ft.RoundedRectangleBorder(radius=30),
-            padding=ft.padding.symmetric(vertical=14),
-        ),
+    register_label = ft.Text(
+        "Crear cuenta de estudiante", size=15, weight=ft.FontWeight.W_700,
+        color=TK_BACKGROUND, text_align=ft.TextAlign.CENTER,
     )
+    register_box = ft.Container(
+        expand=True, bgcolor=_accent(), border_radius=30,
+        padding=ft.padding.symmetric(vertical=14),
+        alignment=ft.Alignment(0, 0),
+        content=register_label,
+    )
+    register_btn = ft.GestureDetector(on_tap=lambda _: None, content=register_box)
+
     theme_btn = ft.IconButton(
         icon=ft.Icons.LIGHT_MODE_ROUNDED if is_dark[0] else ft.Icons.DARK_MODE_ROUNDED,
         icon_color=_faint(),
@@ -95,9 +98,9 @@ def register_page(
     def _select_tab(idx: int) -> None:
         sel_tab[0] = idx
         is_teacher = idx == 1
-        email_field.hint_text         = "Correo institucional" if is_teacher else "Correo electrónico"
-        register_btn.text             = "Crear cuenta de profesor" if is_teacher else "Crear cuenta de estudiante"
-        tab_row.content               = _tab_widget()
+        email_field.hint_text  = "Correo institucional" if is_teacher else "Correo electrónico"
+        register_label.value   = "Crear cuenta de profesor" if is_teacher else "Crear cuenta de estudiante"
+        tab_row.content        = _tab_widget()
         page.update()
 
     def _show_error(msg: str) -> None:
@@ -107,9 +110,14 @@ def register_page(
 
     def _notify() -> None:
         vm = student_vm if sel_tab[0] == 0 else teacher_vm
-        error_text.value    = vm.auth_error
-        error_text.visible  = bool(vm.auth_error)
-        register_btn.disabled = vm.is_loading
+        error_text.value      = vm.auth_error
+        error_text.visible    = bool(vm.auth_error)
+        loading = vm.is_loading
+        register_btn.on_tap   = (lambda _: None) if loading else _on_register
+        register_box.bgcolor  = f"{_accent()}66" if loading else _accent()
+        register_label.value  = "Creando..." if loading else (
+            "Crear cuenta de profesor" if sel_tab[0] == 1 else "Crear cuenta de estudiante"
+        )
         page.update()
 
     student_vm._notify = _notify
@@ -140,10 +148,6 @@ def register_page(
     def _toggle_theme(_) -> None:
         is_dark[0] = not is_dark[0]
         page.theme_mode = ft.ThemeMode.DARK if is_dark[0] else ft.ThemeMode.LIGHT
-        _rebuild_card()
-        page.update()
-
-    def _rebuild_card() -> None:
         theme_btn.icon       = ft.Icons.LIGHT_MODE_ROUNDED if is_dark[0] else ft.Icons.DARK_MODE_ROUNDED
         theme_btn.icon_color = _faint()
         icon_box.bgcolor     = _icon_bg()
@@ -152,18 +156,16 @@ def register_page(
             tf.focused_border_color = _accent()
             tf.border_color         = _border()
             tf.bgcolor              = _surf()
-        register_btn.style = ft.ButtonStyle(
-            bgcolor=_accent(), color=TK_BACKGROUND,
-            shape=ft.RoundedRectangleBorder(radius=30),
-            padding=ft.padding.symmetric(vertical=14),
-        )
-        tab_row.content  = _tab_widget()
-        card.bgcolor     = _surf()
-        card.border      = ft.Border.all(1, _border())
-        view.bgcolor     = _bg()
+        register_box.bgcolor  = _accent()
+        register_label.color  = TK_BACKGROUND
+        tab_row.content       = _tab_widget()
+        card.bgcolor          = _surf()
+        card.border           = ft.Border.all(1, _border())
+        view.bgcolor          = _bg()
+        page.update()
 
-    register_btn.on_click = _on_register
-    theme_btn.on_click    = _toggle_theme
+    register_btn.on_tap  = _on_register
+    theme_btn.on_click   = _toggle_theme
 
     tab_row.content  = _tab_widget()
     card.bgcolor     = _surf()

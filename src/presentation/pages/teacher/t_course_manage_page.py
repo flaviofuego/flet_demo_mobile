@@ -8,6 +8,19 @@ from src.presentation.theme.app_colors import (
 from src.presentation.viewmodels.teacher_viewmodel import TeacherViewModel
 
 
+def _pill_btn(text: str, on_tap, bg: str, fg: str, expand=False) -> ft.GestureDetector:
+    return ft.GestureDetector(
+        on_tap=on_tap,
+        content=ft.Container(
+            expand=expand, bgcolor=bg, border_radius=30,
+            padding=ft.padding.symmetric(horizontal=20, vertical=13),
+            alignment=ft.Alignment(0, 0),
+            content=ft.Text(text, size=14, weight=ft.FontWeight.W_700,
+                            color=fg, text_align=ft.TextAlign.CENTER),
+        ),
+    )
+
+
 def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     content = ft.Container(expand=True)
 
@@ -18,14 +31,13 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 content=ft.Text(f"'{course.name}' será eliminado."),
                 actions=[
                     ft.TextButton("Cancelar", on_click=lambda _: page.pop_dialog()),
-                    ft.ElevatedButton("Eliminar",
-                              style=ft.ButtonStyle(bgcolor=TK_DANGER, color="#FFFFFF",
-                                                   shape=ft.RoundedRectangleBorder(radius=10)),
-                              on_click=lambda _: (vm.delete_course(course.id), page.pop_dialog())),
+                    _pill_btn("Eliminar",
+                              lambda _: (vm.delete_course(course.id), page.pop_dialog()),
+                              TK_DANGER, "#FFFFFF"),
                 ],
             ))
         return ft.Container(
-            bgcolor=TK_SURFACE, border_radius=16,
+            bgcolor=TK_SURFACE, border_radius=20,
             border=ft.Border.all(1, TK_BORDER),
             padding=14, margin=ft.margin.only(bottom=8),
             content=ft.Row(controls=[
@@ -41,12 +53,12 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         nf = ft.TextField(
             label="Nombre", hint_text="Ej: Estructuras de Datos",
             autofocus=True, focused_border_color=TK_GOLD,
-            border_color=TK_BORDER, bgcolor=TK_SURFACE_ALT, border_radius=16,
+            border_color=TK_BORDER, bgcolor=TK_SURFACE_ALT, border_radius=12,
         )
         cf = ft.TextField(
             label="Código (opcional)", hint_text="Ej: DM2026-10",
             focused_border_color=TK_GOLD,
-            border_color=TK_BORDER, bgcolor=TK_SURFACE_ALT, border_radius=16,
+            border_color=TK_BORDER, bgcolor=TK_SURFACE_ALT, border_radius=12,
         )
         def _create(_) -> None:
             if not nf.value:
@@ -65,15 +77,7 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                         ft.Text("Código (opcional)", size=12, color=TK_TEXT_FAINT),
                         cf,
                     ]),
-                    ft.ElevatedButton(
-                        "Crear curso", expand=True,
-                        style=ft.ButtonStyle(
-                            bgcolor=TK_GOLD, color=TK_BACKGROUND,
-                            shape=ft.RoundedRectangleBorder(radius=30),
-                            padding=ft.padding.symmetric(vertical=14),
-                        ),
-                        on_click=_create,
-                    ),
+                    _pill_btn("Crear curso", _create, TK_GOLD, TK_BACKGROUND, expand=True),
                 ]),
             ),
         )

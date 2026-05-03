@@ -40,10 +40,14 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
 
         actions = []
         if ev.is_active and status == EvalStudentStatus.active_pending:
-            actions.append(ft.ElevatedButton(
-                "Evaluar", on_click=_evaluate,
-                style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF",
-                                     shape=ft.RoundedRectangleBorder(radius=10)),
+            actions.append(ft.GestureDetector(
+                on_tap=_evaluate,
+                content=ft.Container(
+                    bgcolor=SK_PRIMARY, border_radius=20,
+                    padding=ft.padding.symmetric(horizontal=14, vertical=8),
+                    content=ft.Text("Evaluar", size=13, weight=ft.FontWeight.W_700,
+                                    color="#FFFFFF"),
+                ),
             ))
         actions.append(ft.OutlinedButton("Resultados", on_click=_results))
 
@@ -86,12 +90,17 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     controls=[
                         ft.Text(f"{vm.done_count}/{vm.total_peers} evaluados", size=11, color="#EEEFFE"),
-                        ft.ElevatedButton(
-                            "Completada" if status == EvalStudentStatus.active_completed else "Evaluar ahora",
-                            disabled=status == EvalStudentStatus.active_completed,
-                            on_click=_on_evaluate,
-                            style=ft.ButtonStyle(bgcolor="#FFFFFF", color=SK_PRIMARY,
-                                                 shape=ft.RoundedRectangleBorder(radius=20)),
+                        ft.GestureDetector(
+                            on_tap=(lambda _: None) if status == EvalStudentStatus.active_completed else _on_evaluate,
+                            content=ft.Container(
+                                bgcolor="#FFFFFF",
+                                border_radius=20,
+                                padding=ft.padding.symmetric(horizontal=14, vertical=8),
+                                content=ft.Text(
+                                    "Completada" if status == EvalStudentStatus.active_completed else "Evaluar ahora",
+                                    size=13, weight=ft.FontWeight.W_700, color=SK_PRIMARY,
+                                ),
+                            ),
                         ),
                     ],
                 ),

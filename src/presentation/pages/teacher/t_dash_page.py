@@ -64,9 +64,15 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 content=name_field,
                 actions=[
                     ft.TextButton("Cancelar", on_click=lambda _: page.pop_dialog()),
-                    ft.ElevatedButton("Guardar", on_click=_confirm,
-                              style=ft.ButtonStyle(bgcolor=TK_GOLD, color=TK_BACKGROUND,
-                                                   shape=ft.RoundedRectangleBorder(radius=10))),
+                    ft.GestureDetector(
+                        on_tap=_confirm,
+                        content=ft.Container(
+                            bgcolor=TK_GOLD, border_radius=20,
+                            padding=ft.padding.symmetric(horizontal=16, vertical=10),
+                            content=ft.Text("Guardar", size=13, weight=ft.FontWeight.W_700,
+                                            color=TK_BACKGROUND),
+                        ),
+                    ),
                 ],
             ))
 
@@ -79,10 +85,15 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 content=ft.Text(f"Se eliminará '{ev.name}' y todas sus respuestas."),
                 actions=[
                     ft.TextButton("Cancelar", on_click=lambda _: page.pop_dialog()),
-                    ft.ElevatedButton("Eliminar",
-                              style=ft.ButtonStyle(bgcolor=TK_DANGER, color="#FFFFFF",
-                                                   shape=ft.RoundedRectangleBorder(radius=10)),
-                              on_click=_confirm),
+                    ft.GestureDetector(
+                        on_tap=_confirm,
+                        content=ft.Container(
+                            bgcolor=TK_DANGER, border_radius=20,
+                            padding=ft.padding.symmetric(horizontal=16, vertical=10),
+                            content=ft.Text("Eliminar", size=13, weight=ft.FontWeight.W_700,
+                                            color="#FFFFFF"),
+                        ),
+                    ),
                 ],
             ))
 
