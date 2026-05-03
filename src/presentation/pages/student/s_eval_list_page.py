@@ -1,4 +1,4 @@
-"""SEvalListPage — full evaluation history grouped by course."""
+﻿"""SEvalListPage — full evaluation history grouped by course."""
 from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
@@ -36,7 +36,7 @@ def s_eval_list_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
 
         return ft.Container(
             bgcolor=SK_SURFACE, border_radius=12,
-            border=ft.border.all(1, SK_BORDER),
+            border=ft.Border.all(1, SK_BORDER),
             padding=14, margin=ft.margin.only(bottom=8),
             content=ft.Column(spacing=6, controls=[
                 ft.Row(
@@ -58,7 +58,7 @@ def s_eval_list_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
     def _build_body() -> ft.Control:
         evals = vm.evaluations
         if not evals:
-            return ft.Container(expand=True, alignment=ft.alignment.center,
+            return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.Text("Sin evaluaciones", color=SK_TEXT_FAINT))
         groups: dict[str, list] = {}
         for ev in evals:
@@ -68,7 +68,7 @@ def s_eval_list_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             items.append(ft.Container(
                 padding=ft.padding.only(top=12, bottom=4),
                 content=ft.Text(course.upper(), size=10, color=SK_TEXT_FAINT,
-                               weight=ft.FontWeight.W_600, letter_spacing=1.2),
+                               weight=ft.FontWeight.W_600),
             ))
             items.extend(_eval_row(ev) for ev in evs)
         return ft.ListView(controls=items, expand=True,

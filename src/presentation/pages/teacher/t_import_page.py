@@ -1,4 +1,4 @@
-"""TImportPage — CSV import of groups."""
+﻿"""TImportPage — CSV import of groups."""
 from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
@@ -20,14 +20,13 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     error_text   = ft.Text("", color=TK_DANGER,  size=12, visible=False)
     success_text = ft.Text("", color=TK_SUCCESS, size=12, visible=False)
 
-    file_picker = ft.FilePicker(on_result=lambda e: _on_file_picked(e))
-    page.overlay.append(file_picker)
-    page.update()
+    file_picker = ft.FilePicker()
 
-    def _on_file_picked(e: ft.FilePickerResultEvent) -> None:
-        if not e.files:
+    async def _pick_file(_) -> None:
+        files = await file_picker.pick_files(allowed_extensions=["csv"], allow_multiple=False)
+        if not files:
             return
-        f = e.files[0]
+        f = files[0]
         state["filename"] = f.name
         try:
             with open(f.path, "r", encoding="utf-8-sig") as fh:
@@ -41,7 +40,7 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     def _course_picker() -> ft.BottomSheet:
         def _pick(cid: int, cname: str) -> None:
             state["course_id"] = cid
-            page.close(bs)
+            page.pop_dialog()
             _refresh()
 
         def _create_new(_) -> None:
@@ -54,17 +53,17 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 # pick the newest course
                 if vm.courses:
                     _pick(vm.courses[0].id, vm.courses[0].name)
-                page.close(cdlg)
+                page.pop_dialog()
             cdlg = ft.AlertDialog(
                 title=ft.Text("Nuevo curso"),
                 content=ft.Column(tight=True, controls=[nf, cf]),
                 actions=[
-                    ft.TextButton("Cancelar", on_click=lambda _: page.close(cdlg)),
-                    ft.ElevatedButton("Crear", on_click=_do,
+                    ft.TextButton("Cancelar", on_click=lambda _: page.pop_dialog()),
+                    ft.Button("Crear", on_click=_do,
                                      style=ft.ButtonStyle(bgcolor=TK_GOLD, color=TK_BACKGROUND)),
                 ],
             )
-            page.open(cdlg)
+            page.show_dialog(cdlg)
 
         tiles = [
             ft.ListTile(title=ft.Text(c.name, color=TK_TEXT),
@@ -128,16 +127,16 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 title=ft.Text("¿Eliminar categoría?"),
                 content=ft.Text(f"'{cat.name}' y todos sus grupos serán eliminados."),
                 actions=[
-                    ft.TextButton("Cancelar", on_click=lambda _: page.close(dlg)),
-                    ft.ElevatedButton("Eliminar",
+                    ft.TextButton("Cancelar", on_click=lambda _: page.pop_dialog()),
+                    ft.Button("Eliminar",
                                      style=ft.ButtonStyle(bgcolor=TK_DANGER, color="#FFFFFF"),
-                                     on_click=lambda _: (vm.delete_category(cat.id), page.close(dlg))),
+                                     on_click=lambda _: (vm.delete_category(cat.id), page.pop_dialog())),
                 ],
             )
-            page.open(dlg)
+            page.show_dialog(dlg)
         return ft.Container(
             bgcolor=TK_SURFACE, border_radius=12,
-            border=ft.border.all(1, TK_BORDER),
+            border=ft.Border.all(1, TK_BORDER),
             padding=12, margin=ft.margin.only(bottom=8),
             content=ft.Row(controls=[
                 ft.Column(expand=True, spacing=2, controls=[
@@ -159,31 +158,30 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
         import_section = ft.Column(spacing=10, controls=[
             ft.Text("IMPORTAR GRUPOS", size=10, weight=ft.FontWeight.W_600,
-                   color=TK_TEXT_FAINT, letter_spacing=1.2),
+                   color=TK_TEXT_FAINT),
             ft.Container(bgcolor=TK_SURFACE, border_radius=14,
-                        border=ft.border.all(1, TK_BORDER), padding=16,
+                        border=ft.Border.all(1, TK_BORDER), padding=16,
                         content=ft.Column(spacing=10, controls=[
-                            ft.ElevatedButton(
+                            ft.Button(
                                 f"📄 {filename}" if filename else "Seleccionar CSV",
                                 style=ft.ButtonStyle(
                                     bgcolor=TK_GOLD if filename else TK_SURFACE_ALT,
                                     color=TK_BACKGROUND if filename else TK_TEXT_FAINT,
                                 ),
-                                on_click=lambda _: file_picker.pick_files(
-                                    allowed_extensions=["csv"], allow_multiple=False),
+                                on_click=_pick_file,
                             ),
-                            ft.ElevatedButton(
+                            ft.Button(
                                 f"📚 {course_name}" if course_name else "Seleccionar curso",
                                 style=ft.ButtonStyle(
                                     bgcolor=TK_GOLD if course_name else TK_SURFACE_ALT,
                                     color=TK_BACKGROUND if course_name else TK_TEXT_FAINT,
                                 ),
-                                on_click=lambda _: page.open(_course_picker()),
+                                on_click=lambda _: page.show_dialog(_course_picker()),
                             ),
                             category_name_field,
                             error_text,
                             success_text,
-                            ft.ElevatedButton(
+                            ft.Button(
                                 "Importando..." if vm.import_loading else "Importar",
                                 disabled=vm.import_loading,
                                 style=ft.ButtonStyle(bgcolor=TK_GOLD, color=TK_BACKGROUND),
@@ -196,7 +194,7 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         cats_section = ft.Column(spacing=8, controls=[
             ft.Container(height=16),
             ft.Text("CATEGORÍAS IMPORTADAS", size=10, weight=ft.FontWeight.W_600,
-                   color=TK_TEXT_FAINT, letter_spacing=1.2),
+                   color=TK_TEXT_FAINT),
             *(
                 [ft.Text("Sin categorías importadas", color=TK_TEXT_FAINT, size=12)]
                 if not vm.categories
@@ -227,4 +225,5 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             bgcolor=TK_BACKGROUND, elevation=0,
         ),
         controls=[content],
+        services=[file_picker],
     )

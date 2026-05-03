@@ -1,4 +1,4 @@
-"""TDashPage — teacher dashboard."""
+﻿"""TDashPage — teacher dashboard."""
 from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
@@ -16,7 +16,7 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     def _stat_card(label: str, value: str, color: str) -> ft.Container:
         return ft.Container(
             bgcolor=TK_SURFACE, border_radius=14,
-            border=ft.border.all(1, TK_BORDER),
+            border=ft.Border.all(1, TK_BORDER),
             padding=14, expand=True,
             content=ft.Column(spacing=4, controls=[
                 ft.Text(value, size=28, weight=ft.FontWeight.W_900, color=color),
@@ -37,7 +37,7 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             def _confirm(_) -> None:
                 try:
                     vm.rename_evaluation(ev.id, name_field.value or ev.name)
-                    page.close(dlg)
+                    page.pop_dialog()
                 except Exception as e:
                     name_field.error_text = str(e)
                     page.update()
@@ -45,31 +45,31 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 title=ft.Text("Renombrar evaluación"),
                 content=name_field,
                 actions=[
-                    ft.TextButton("Cancelar", on_click=lambda _: page.close(dlg)),
-                    ft.ElevatedButton("Guardar", on_click=_confirm),
+                    ft.TextButton("Cancelar", on_click=lambda _: page.pop_dialog()),
+                    ft.Button("Guardar", on_click=_confirm),
                 ],
             )
-            page.open(dlg)
+            page.show_dialog(dlg)
 
         def _delete(_) -> None:
             def _confirm(_) -> None:
                 vm.delete_evaluation(ev.id)
-                page.close(dlg)
+                page.pop_dialog()
             dlg = ft.AlertDialog(
                 title=ft.Text("¿Eliminar evaluación?"),
                 content=ft.Text(f"Se eliminará '{ev.name}' y todas sus respuestas."),
                 actions=[
-                    ft.TextButton("Cancelar", on_click=lambda _: page.close(dlg)),
-                    ft.ElevatedButton("Eliminar",
+                    ft.TextButton("Cancelar", on_click=lambda _: page.pop_dialog()),
+                    ft.Button("Eliminar",
                                      style=ft.ButtonStyle(bgcolor=TK_DANGER, color="#FFFFFF"),
                                      on_click=_confirm),
                 ],
             )
-            page.open(dlg)
+            page.show_dialog(dlg)
 
         return ft.Container(
             bgcolor=TK_SURFACE, border_radius=14,
-            border=ft.border.all(1, TK_BORDER),
+            border=ft.Border.all(1, TK_BORDER),
             padding=14, margin=ft.margin.only(bottom=8),
             content=ft.Column(spacing=6, controls=[
                 ft.Row(controls=[
@@ -100,9 +100,10 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         name     = t.name if t else ""
         email    = t.email if t else ""
 
-        def _logout(_) -> None:
-            page.close(bs)
-            page.run_thread(lambda: (vm.logout(), page.go("/login")))
+        async def _logout(_) -> None:
+            page.pop_dialog()
+            vm.logout()
+            await page.push_route("/login")
 
         bs = ft.BottomSheet(
             open=True,
@@ -129,7 +130,7 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
     def _build_body() -> ft.Control:
         if vm.is_loading:
-            return ft.Container(expand=True, alignment=ft.alignment.center,
+            return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.ProgressRing(color=TK_GOLD))
 
         active_count = sum(1 for e in vm.evaluations if e.is_active)
@@ -142,7 +143,7 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         items: list[ft.Control] = [stats, ft.Container(height=8)]
         if vm.evaluations:
             items.append(ft.Text("EVALUACIONES", size=10, color=TK_TEXT_FAINT,
-                                weight=ft.FontWeight.W_600, letter_spacing=1.2))
+                                weight=ft.FontWeight.W_600))
             items.extend(_eval_card(e) for e in vm.evaluations)
 
         return ft.ListView(controls=items, expand=True,
@@ -166,11 +167,7 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             ft.NavigationBarDestination(icon=ft.Icons.UPLOAD_FILE_OUTLINED, label="Importar"),
             ft.NavigationBarDestination(icon=ft.Icons.BOOK_OUTLINED, label="Cursos"),
         ],
-        on_change=lambda e: [
-            page.go("/teacher/dash"),
-            page.go("/teacher/import"),
-            page.go("/teacher/courses"),
-        ][e.control.selected_index],
+        on_change=lambda e: page.go(["/teacher/dash", "/teacher/import", "/teacher/courses"][e.control.selected_index]),
     )
 
     return ft.View(
@@ -185,7 +182,7 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                              tooltip="Nueva evaluación",
                              on_click=lambda _: page.go("/teacher/new-eval")),
                 ft.IconButton(ft.Icons.ACCOUNT_CIRCLE_OUTLINED, tooltip="Perfil",
-                             on_click=lambda _: page.open(_profile_sheet())),
+                             on_click=lambda _: page.show_dialog(_profile_sheet())),
             ],
         ),
         controls=[content],

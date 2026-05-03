@@ -1,4 +1,4 @@
-"""TProfilePage — teacher profile hub."""
+﻿"""TProfilePage — teacher profile hub."""
 from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
@@ -15,8 +15,9 @@ def t_profile_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     name     = t.name if t else "—"
     email    = t.email if t else "—"
 
-    def _logout(_) -> None:
-        page.run_thread(lambda: (vm.logout(), page.go("/login")))
+    async def _logout(_) -> None:
+        vm.logout()
+        await page.push_route("/login")
 
     nav = ft.NavigationBar(
         bgcolor=TK_SURFACE, indicator_color=TK_GOLD_LIGHT, selected_index=1,
@@ -25,11 +26,7 @@ def t_profile_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             ft.NavigationBarDestination(icon=ft.Icons.UPLOAD_FILE_OUTLINED, label="Importar"),
             ft.NavigationBarDestination(icon=ft.Icons.BOOK_OUTLINED, label="Cursos"),
         ],
-        on_change=lambda e: [
-            page.go("/teacher/dash"),
-            page.go("/teacher/import"),
-            page.go("/teacher/courses"),
-        ][e.control.selected_index],
+        on_change=lambda e: page.go(["/teacher/dash", "/teacher/import", "/teacher/courses"][e.control.selected_index]),
     )
 
     return ft.View(

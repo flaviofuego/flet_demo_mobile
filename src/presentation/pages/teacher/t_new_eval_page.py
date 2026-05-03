@@ -1,4 +1,4 @@
-"""TNewEvalPage — create a new evaluation."""
+﻿"""TNewEvalPage — create a new evaluation."""
 from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
@@ -63,7 +63,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             vm.selected_course_id = cid
             vm.selected_course_name = cname
             page.run_thread(lambda: vm.load_categories_for_course(cid))
-            page.close(bs)
+            page.pop_dialog()
 
         tiles = [
             ft.ListTile(title=ft.Text(c.name, color=TK_TEXT),
@@ -86,7 +86,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         def _pick(_, cid, cname):
             vm.selected_category_id   = cid
             vm.selected_category_name = cname
-            page.close(bs)
+            page.pop_dialog()
             _refresh()
 
         cats = vm.categories_for_course
@@ -114,43 +114,43 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
     def _on_create(_) -> None:
         vm.eval_name = name_field.value or ""
-        def _run() -> None:
+        async def _run() -> None:
             err = vm.create_evaluation()
             if err:
                 error_text.value   = err
                 error_text.visible = True
                 page.update()
             else:
-                page.go("/teacher/dash")
-        page.run_thread(_run)
+                await page.push_route("/teacher/dash")
+        page.run_task(_run)
 
     def _build_body() -> ft.Control:
         return ft.ListView(
             controls=[
                 ft.Text("NUEVA EVALUACIÓN", size=10, weight=ft.FontWeight.W_600,
-                       color=TK_TEXT_FAINT, letter_spacing=1.2),
+                       color=TK_TEXT_FAINT),
                 ft.Container(height=8),
                 name_field,
                 ft.Container(height=4),
                 ft.Text("Curso", size=12, color=TK_TEXT_FAINT),
-                ft.ElevatedButton(
+                ft.Button(
                     vm.selected_course_name or "Seleccionar curso",
                     style=ft.ButtonStyle(
                         bgcolor=TK_GOLD if vm.selected_course_name else TK_SURFACE_ALT,
                         color=TK_BACKGROUND if vm.selected_course_name else TK_TEXT,
                     ),
-                    on_click=lambda _: page.open(_course_picker_sheet()),
+                    on_click=lambda _: page.show_dialog(_course_picker_sheet()),
                     expand=True,
                 ),
                 ft.Container(height=4),
                 ft.Text("Grupos", size=12, color=TK_TEXT_FAINT),
-                ft.ElevatedButton(
+                ft.Button(
                     vm.selected_category_name or "Seleccionar categoría",
                     style=ft.ButtonStyle(
                         bgcolor=TK_GOLD if vm.selected_category_name else TK_SURFACE_ALT,
                         color=TK_BACKGROUND if vm.selected_category_name else TK_TEXT,
                     ),
-                    on_click=lambda _: page.open(_category_picker_sheet()),
+                    on_click=lambda _: page.show_dialog(_category_picker_sheet()),
                     expand=True,
                     disabled=vm.selected_course_id is None,
                 ),
@@ -162,7 +162,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 _vis_chips(),
                 ft.Container(height=16),
                 error_text,
-                ft.ElevatedButton(
+                ft.Button(
                     "Creando..." if vm.is_loading else "Crear evaluación",
                     style=ft.ButtonStyle(bgcolor=TK_GOLD, color=TK_BACKGROUND),
                     expand=True,

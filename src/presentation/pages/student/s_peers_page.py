@@ -24,7 +24,7 @@ def s_peers_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
 
         return ft.Container(
             bgcolor=SK_SURFACE, border_radius=14,
-            border=ft.border.all(1, SK_BORDER),
+            border=ft.Border.all(1, SK_BORDER),
             padding=14, margin=ft.margin.only(bottom=8),
             on_click=_on_tap,
             content=ft.Row(spacing=12, controls=[
@@ -44,7 +44,7 @@ def s_peers_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
         ev    = vm.active_eval
         peers = vm.peers
         if not peers:
-            return ft.Container(expand=True, alignment=ft.alignment.center,
+            return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.Column(
                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                    controls=[
@@ -52,7 +52,7 @@ def s_peers_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                                        ft.Text("Sin compañeros en esta evaluación", color=SK_TEXT_FAINT),
                                    ]))
 
-        submit_btn = ft.ElevatedButton(
+        submit_btn = ft.Button(
             f"Enviar evaluación ({vm.done_count}/{vm.total_peers})",
             disabled=not vm.all_evaluated,
             style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF"),
@@ -78,10 +78,10 @@ def s_peers_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
         ])
 
     def _on_submit(_) -> None:
-        def _do() -> None:
+        async def _do() -> None:
             vm.submit_evaluation()
-            page.go("/student/courses")
-        page.run_thread(_do)
+            await page.push_route("/student/courses")
+        page.run_task(_do)
 
     def _notify() -> None:
         content.content = _build_body()

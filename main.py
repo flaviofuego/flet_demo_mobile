@@ -60,7 +60,7 @@ def main(page: ft.Page) -> None:
     teacher_vm = TeacherViewModel(teacher_auth, group_repo, eval_repo, course_repo)
 
     # ── Router ────────────────────────────────────────────────────────────────
-    def route_change(e: ft.RouteChangeEvent) -> None:
+    def route_change(e=None) -> None:
         page.views.clear()
         r = page.route
 
@@ -95,14 +95,16 @@ def main(page: ft.Page) -> None:
 
         page.update()
 
-    def view_pop(e: ft.ViewPopEvent) -> None:
-        page.views.pop()
+    async def view_pop(e: ft.ViewPopEvent) -> None:
+        if e.view is not None:
+            page.views.remove(e.view)
         if page.views:
-            page.go(page.views[-1].route)
+            top = page.views[-1]
+            await page.push_route(top.route)
 
     page.on_route_change = route_change
     page.on_view_pop = view_pop
-    page.go("/")
+    route_change()  # llamada directa — evita la pantalla negra de page.go() en Flet ≥ 0.80
 
 
 def _splash_view(
@@ -110,20 +112,20 @@ def _splash_view(
     student_vm: StudentViewModel,
     teacher_vm: TeacherViewModel,
 ) -> ft.View:
-    def _resolve() -> None:
+    async def _resolve() -> None:
         try:
             student_vm.check_session()
             teacher_vm.check_session()
         except Exception:
             pass
         if teacher_vm.is_logged_in:
-            page.go("/teacher/dash")
+            await page.push_route("/teacher/dash")
         elif student_vm.is_logged_in:
-            page.go("/student/courses")
+            await page.push_route("/student/courses")
         else:
-            page.go("/login")
+            await page.push_route("/login")
 
-    page.run_thread(_resolve)
+    page.run_task(_resolve)
 
     return ft.View(
         route="/",
@@ -131,7 +133,7 @@ def _splash_view(
         controls=[
             ft.Container(
                 expand=True,
-                alignment=ft.alignment.center,
+                alignment=ft.Alignment(0, 0),
                 content=ft.ProgressRing(color=SK_PRIMARY, stroke_width=2),
             )
         ],
@@ -139,4 +141,4 @@ def _splash_view(
 
 
 if __name__ == "__main__":
-    ft.app(target=main)
+    ft.run(main)

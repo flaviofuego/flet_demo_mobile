@@ -37,7 +37,7 @@ def s_peer_score_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
 
         return ft.Container(
             bgcolor=SK_SURFACE, border_radius=14,
-            border=ft.border.all(1, SK_BORDER),
+            border=ft.Border.all(1, SK_BORDER),
             padding=16, margin=ft.margin.only(bottom=10),
             content=ft.Column(spacing=6, controls=[
                 ft.Row(
@@ -61,7 +61,7 @@ def s_peer_score_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             ]),
         )
 
-    save_btn = ft.ElevatedButton(
+    save_btn = ft.Button(
         "Guardar evaluación",
         expand=True,
         style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF"),
@@ -72,7 +72,7 @@ def s_peer_score_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
     def _build_body() -> ft.Control:
         peer = vm.current_peer
         if peer is None:
-            return ft.Container(expand=True, alignment=ft.alignment.center,
+            return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.Text("Selecciona un compañero primero", color=SK_TEXT_FAINT))
 
         save_btn.disabled = not vm.all_criteria_scored

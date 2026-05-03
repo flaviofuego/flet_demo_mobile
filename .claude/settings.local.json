@@ -1,7 +1,20 @@
 {
   "permissions": {
     "allow": [
-      "WebFetch(domain:flet.dev)"
+      "WebFetch(domain:flet.dev)",
+      "Bash(python -c \"import flet as ft; help\\(ft.FilePicker.__init__\\)\")",
+      "Bash(python -c \"import flet as ft; fp = ft.FilePicker\\(\\); print\\([a for a in dir\\(fp\\) if 'result' in a.lower\\(\\) or 'upload' in a.lower\\(\\)]\\)\")",
+      "Bash(python -c \"import flet as ft; fp = ft.FilePicker\\(\\); print\\([a for a in dir\\(fp\\) if not a.startswith\\('__'\\)]\\)\")",
+      "Bash(python -c \"import flet as ft; import inspect; print\\(inspect.signature\\(ft.FilePicker.pick_files\\)\\)\")",
+      "Bash(python -c \"import flet as ft; import inspect; src = inspect.getsource\\(ft.FilePicker.pick_files\\); print\\(src\\)\")",
+      "Bash(python -c \"import flet as ft; import inspect; sig = inspect.signature\\(ft.Text.__init__\\); print\\(list\\(sig.parameters.keys\\(\\)\\)\\)\")",
+      "Bash(python -c \"import flet; print\\(flet.__version__\\)\")",
+      "Bash(python -c \"import flet;\"*)",
+      "Bash(python -c ' *)",
+      "Bash(python -c \"import flet as ft; print\\([m for m in dir\\(ft.Page\\) if 'open' in m.lower\\(\\) or 'dialog' in m.lower\\(\\) or 'sheet' in m.lower\\(\\) or 'close' in m.lower\\(\\)]\\)\")",
+      "Bash(python -c \"import flet as ft; import inspect; sig = inspect.signature\\(ft.Page.show_dialog\\); print\\(sig\\)\")",
+      "Bash(python -c \"import flet as ft; import inspect; sig = inspect.signature\\(ft.Page.pop_dialog\\); print\\(sig\\)\")",
+      "Bash(python -c \"import flet as ft; import inspect; sig = inspect.signature\\(ft.BottomSheet.__init__\\); print\\(list\\(sig.parameters.keys\\(\\)\\)\\)\")"
     ]
   }
 }

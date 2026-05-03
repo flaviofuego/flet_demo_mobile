@@ -40,10 +40,11 @@ def register_page(
     )
     error_text = ft.Text("", color="#EF4444", size=12, visible=False)
     role_tabs = ft.Tabs(
-        tabs=[ft.Tab(text="Estudiante"), ft.Tab(text="Docente")],
+        content=ft.TabBar(tabs=[ft.Tab(label="Estudiante"), ft.Tab(label="Docente")]),
+        length=2,
         selected_index=0,
     )
-    register_btn = ft.ElevatedButton(
+    register_btn = ft.Button(
         "Crear cuenta",
         expand=True,
         style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF"),
@@ -59,7 +60,7 @@ def register_page(
         error_text.value = vm.auth_error
         error_text.visible = bool(vm.auth_error)
         register_btn.disabled = vm.is_loading
-        register_btn.text = "Creando..." if vm.is_loading else "Crear cuenta"
+        register_btn.content = "Creando..." if vm.is_loading else "Crear cuenta"
         page.update()
 
     student_vm._notify = _notify
@@ -78,16 +79,16 @@ def register_page(
             return
         is_teacher = role_tabs.selected_index == 1
 
-        def _do() -> None:
+        async def _do() -> None:
             if is_teacher:
                 ok = teacher_vm.register(name, email, password)
                 if ok:
-                    page.go("/teacher/dash")
+                    await page.push_route("/teacher/dash")
             else:
                 ok = student_vm.register(name, email, password)
                 if ok:
-                    page.go("/student/courses")
-        page.run_thread(_do)
+                    await page.push_route("/student/courses")
+        page.run_task(_do)
 
     register_btn.on_click = _on_register
 
@@ -108,7 +109,7 @@ def register_page(
                     expand=True,
                     bgcolor=SK_SURFACE,
                     border_radius=18,
-                    border=ft.border.all(1, SK_BORDER),
+                    border=ft.Border.all(1, SK_BORDER),
                     padding=20,
                     content=ft.Column(
                         scroll=ft.ScrollMode.AUTO,
@@ -118,7 +119,7 @@ def register_page(
                                 width=44, height=44,
                                 bgcolor=SK_PRIMARY_LIGHT,
                                 border_radius=12,
-                                alignment=ft.alignment.center,
+                                alignment=ft.Alignment(0, 0),
                                 content=ft.Icon(ft.Icons.SCHOOL_ROUNDED, color=SK_PRIMARY, size=24),
                             ),
                             ft.Text("Registro", size=22, weight=ft.FontWeight.W_700, color=SK_TEXT),

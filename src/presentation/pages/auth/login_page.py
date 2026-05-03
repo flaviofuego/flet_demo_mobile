@@ -39,7 +39,7 @@ def login_page(
         focused_border_color=SK_PRIMARY,
     )
     error_text = ft.Text("", color="#EF4444", size=12, visible=False)
-    login_btn = ft.ElevatedButton(
+    login_btn = ft.Button(
         "Iniciar sesión",
         expand=True,
         style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF"),
@@ -51,13 +51,13 @@ def login_page(
         error_text.value = login_vm.auth_error
         error_text.visible = bool(login_vm.auth_error)
         login_btn.disabled = login_vm.is_loading
-        login_btn.text = "Iniciando..." if login_vm.is_loading else "Iniciar sesión"
+        login_btn.content = "Iniciando..." if login_vm.is_loading else "Iniciar sesión"
         page.update()
 
     login_vm._notify = _notify
 
     def _on_login(_) -> None:
-        def _do() -> None:
+        async def _do() -> None:
             result = login_vm.login(
                 email_field.value or "", password_field.value or ""
             )
@@ -69,8 +69,8 @@ def login_page(
             else:
                 student_vm.check_session()
                 teacher_vm.teacher = None
-            page.go(result.home_route)
-        page.run_thread(_do)
+            await page.push_route(result.home_route)
+        page.run_task(_do)
 
     def _on_register(_) -> None:
         login_vm.clear_error()
@@ -103,7 +103,7 @@ def login_page(
                     expand=True,
                     bgcolor=SK_SURFACE,
                     border_radius=18,
-                    border=ft.border.all(1, SK_BORDER),
+                    border=ft.Border.all(1, SK_BORDER),
                     padding=20,
                     content=ft.Column(
                         scroll=ft.ScrollMode.AUTO,
@@ -116,7 +116,7 @@ def login_page(
                                         width=44, height=44,
                                         bgcolor=SK_PRIMARY_LIGHT,
                                         border_radius=12,
-                                        alignment=ft.alignment.center,
+                                        alignment=ft.Alignment(0, 0),
                                         content=ft.Icon(ft.Icons.SCHOOL_ROUNDED, color=SK_PRIMARY, size=24),
                                     ),
                                     ft.Container(expand=True),

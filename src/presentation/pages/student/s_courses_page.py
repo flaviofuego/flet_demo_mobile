@@ -1,4 +1,4 @@
-"""SCoursesPage — student's main screen showing their evaluations."""
+﻿"""SCoursesPage — student's main screen showing their evaluations."""
 from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
@@ -40,7 +40,7 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
 
         actions = []
         if ev.is_active and status == EvalStudentStatus.active_pending:
-            actions.append(ft.ElevatedButton(
+            actions.append(ft.Button(
                 "Evaluar", on_click=_evaluate,
                 style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF"),
             ))
@@ -48,7 +48,7 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
 
         return ft.Container(
             bgcolor=SK_SURFACE, border_radius=14,
-            border=ft.border.all(1, SK_BORDER),
+            border=ft.Border.all(1, SK_BORDER),
             padding=16, margin=ft.margin.only(bottom=10),
             content=ft.Column(spacing=8, controls=[
                 ft.Row(controls=[
@@ -85,7 +85,7 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     controls=[
                         ft.Text(f"{vm.done_count}/{vm.total_peers} evaluados", size=11, color="#EEEFFE"),
-                        ft.ElevatedButton(
+                        ft.Button(
                             "Completada" if status == EvalStudentStatus.active_completed else "Evaluar ahora",
                             disabled=status == EvalStudentStatus.active_completed,
                             on_click=_on_evaluate,
@@ -102,9 +102,10 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
         name = s.name if s else ""
         email = s.email if s else ""
 
-        def _logout(_) -> None:
-            page.close(bs)
-            page.run_thread(lambda: (vm.logout(), page.go("/login")))
+        async def _logout(_) -> None:
+            page.pop_dialog()
+            vm.logout()
+            await page.push_route("/login")
 
         bs = ft.BottomSheet(
             open=True,
@@ -131,11 +132,11 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
 
     def _build_body() -> ft.Control:
         if vm.is_loading:
-            return ft.Container(expand=True, alignment=ft.alignment.center,
+            return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.ProgressRing(color=SK_PRIMARY))
         evals = vm.evaluations
         if not evals:
-            return ft.Container(expand=True, alignment=ft.alignment.center,
+            return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.Column(
                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                    controls=[
@@ -147,11 +148,11 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
         items: list[ft.Control] = [_hero_card()]
         if active:
             items.append(ft.Text("ACTIVAS", size=10, weight=ft.FontWeight.W_600,
-                                color=SK_TEXT_FAINT, letter_spacing=1.2))
+                                color=SK_TEXT_FAINT))
             items.extend(_eval_card(e) for e in active)
         if closed:
             items.append(ft.Text("CERRADAS", size=10, weight=ft.FontWeight.W_600,
-                                color=SK_TEXT_FAINT, letter_spacing=1.2))
+                                color=SK_TEXT_FAINT))
             items.extend(_eval_card(e) for e in closed)
         return ft.ListView(controls=items, expand=True,
                           padding=ft.padding.symmetric(horizontal=16, vertical=8))
@@ -177,7 +178,7 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                 ft.IconButton(ft.Icons.HISTORY, tooltip="Historial",
                              on_click=lambda _: page.go("/student/eval-list")),
                 ft.IconButton(ft.Icons.ACCOUNT_CIRCLE_OUTLINED, tooltip="Perfil",
-                             on_click=lambda _: page.open(_profile_sheet())),
+                             on_click=lambda _: page.show_dialog(_profile_sheet())),
             ],
         ),
         controls=[content],

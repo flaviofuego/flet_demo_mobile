@@ -15,7 +15,7 @@ def s_my_results_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
         fraction = max(0.0, min(1.0, (value - 2) / 3))
         return ft.Container(
             bgcolor=SK_SURFACE, border_radius=12,
-            border=ft.border.all(1, SK_BORDER),
+            border=ft.Border.all(1, SK_BORDER),
             padding=14, margin=ft.margin.only(bottom=8),
             content=ft.Column(spacing=6, controls=[
                 ft.Row(
@@ -42,7 +42,7 @@ def s_my_results_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             vis_label = "Resultados visibles" if ev.visibility == "public" else "Resultados privados"
 
         if not results or avg == 0:
-            return ft.Container(expand=True, alignment=ft.alignment.center,
+            return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.Column(
                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                    controls=[

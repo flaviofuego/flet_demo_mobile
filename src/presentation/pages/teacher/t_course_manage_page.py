@@ -1,4 +1,4 @@
-"""TCourseManagePage — CRUD for teacher courses."""
+﻿"""TCourseManagePage — CRUD for teacher courses."""
 from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
@@ -17,16 +17,16 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 title=ft.Text("¿Eliminar curso?"),
                 content=ft.Text(f"'{course.name}' será eliminado."),
                 actions=[
-                    ft.TextButton("Cancelar", on_click=lambda _: page.close(dlg)),
-                    ft.ElevatedButton("Eliminar",
+                    ft.TextButton("Cancelar", on_click=lambda _: page.pop_dialog()),
+                    ft.Button("Eliminar",
                                      style=ft.ButtonStyle(bgcolor=TK_DANGER, color="#FFFFFF"),
-                                     on_click=lambda _: (vm.delete_course(course.id), page.close(dlg))),
+                                     on_click=lambda _: (vm.delete_course(course.id), page.pop_dialog())),
                 ],
             )
-            page.open(dlg)
+            page.show_dialog(dlg)
         return ft.Container(
             bgcolor=TK_SURFACE, border_radius=12,
-            border=ft.border.all(1, TK_BORDER),
+            border=ft.Border.all(1, TK_BORDER),
             padding=14, margin=ft.margin.only(bottom=8),
             content=ft.Row(controls=[
                 ft.Column(expand=True, spacing=2, controls=[
@@ -44,13 +44,13 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             if not nf.value:
                 nf.error_text = "Requerido"; page.update(); return
             vm.create_course(nf.value, cf.value or "")
-            page.close(dlg)
+            page.pop_dialog()
         dlg = ft.AlertDialog(
             title=ft.Text("Nuevo curso"),
             content=ft.Column(tight=True, controls=[nf, cf]),
             actions=[
-                ft.TextButton("Cancelar", on_click=lambda _: page.close(dlg)),
-                ft.ElevatedButton("Crear", on_click=_create,
+                ft.TextButton("Cancelar", on_click=lambda _: page.pop_dialog()),
+                ft.Button("Crear", on_click=_create,
                                  style=ft.ButtonStyle(bgcolor=TK_GOLD, color=TK_BACKGROUND)),
             ],
         )
@@ -58,10 +58,10 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
     def _build_body() -> ft.Control:
         if vm.is_loading:
-            return ft.Container(expand=True, alignment=ft.alignment.center,
+            return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.ProgressRing(color=TK_GOLD))
         if not vm.courses:
-            return ft.Container(expand=True, alignment=ft.alignment.center,
+            return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.Column(
                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                    controls=[
@@ -88,11 +88,7 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             ft.NavigationBarDestination(icon=ft.Icons.UPLOAD_FILE_OUTLINED, label="Importar"),
             ft.NavigationBarDestination(icon=ft.Icons.BOOK_OUTLINED, label="Cursos"),
         ],
-        on_change=lambda e: [
-            page.go("/teacher/dash"),
-            page.go("/teacher/import"),
-            page.go("/teacher/courses"),
-        ][e.control.selected_index],
+        on_change=lambda e: page.go(["/teacher/dash", "/teacher/import", "/teacher/courses"][e.control.selected_index]),
     )
 
     return ft.View(
@@ -106,7 +102,7 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             bgcolor=TK_BACKGROUND, elevation=0,
             actions=[
                 ft.IconButton(ft.Icons.ADD, icon_color=TK_GOLD, tooltip="Nuevo curso",
-                             on_click=lambda _: page.open(_add_dialog())),
+                             on_click=lambda _: page.show_dialog(_add_dialog())),
             ],
         ),
         controls=[content],

@@ -1,4 +1,4 @@
-"""TResultsPage — group results with drill-down."""
+﻿"""TResultsPage — group results with drill-down."""
 from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
@@ -30,7 +30,7 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         crit_rows = [
             ft.Container(
                 bgcolor=TK_SURFACE, border_radius=12,
-                border=ft.border.all(1, TK_BORDER),
+                border=ft.Border.all(1, TK_BORDER),
                 padding=12, margin=ft.margin.only(bottom=6),
                 content=ft.Row(
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
@@ -78,11 +78,11 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             ft.ListView(
                 controls=[
                     ft.Text("POR CRITERIO", size=10, color=TK_TEXT_FAINT,
-                           weight=ft.FontWeight.W_600, letter_spacing=1.2),
+                           weight=ft.FontWeight.W_600),
                     *crit_rows,
                     ft.Container(height=8),
                     ft.Text("POR ESTUDIANTE", size=10, color=TK_TEXT_FAINT,
-                           weight=ft.FontWeight.W_600, letter_spacing=1.2),
+                           weight=ft.FontWeight.W_600),
                     *student_rows,
                 ],
                 expand=True,
@@ -92,11 +92,11 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
     def _build_overview() -> ft.Control:
         if vm.results_loading:
-            return ft.Container(expand=True, alignment=ft.alignment.center,
+            return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.ProgressRing(color=TK_GOLD))
         groups = vm.group_results
         if not groups:
-            return ft.Container(expand=True, alignment=ft.alignment.center,
+            return ft.Container(expand=True, alignment=ft.Alignment(0, 0),
                                content=ft.Column(
                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                    controls=[
@@ -109,7 +109,7 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
         header = ft.Container(
             bgcolor=TK_SURFACE, border_radius=18,
-            border=ft.border.all(1, TK_BORDER), padding=16,
+            border=ft.Border.all(1, TK_BORDER), padding=16,
             margin=ft.margin.only(bottom=16),
             content=ft.Column(spacing=4, horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                              controls=[
@@ -130,7 +130,7 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 page.update()
             return ft.Container(
                 bgcolor=TK_SURFACE, border_radius=14,
-                border=ft.border.all(1, TK_BORDER),
+                border=ft.Border.all(1, TK_BORDER),
                 padding=14, margin=ft.margin.only(bottom=8),
                 on_click=_drill,
                 content=ft.Column(spacing=6, controls=[
@@ -154,7 +154,7 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             controls=[
                 header,
                 ft.Text("GRUPOS", size=10, color=TK_TEXT_FAINT,
-                       weight=ft.FontWeight.W_600, letter_spacing=1.2),
+                       weight=ft.FontWeight.W_600),
                 *[_group_card(g, i) for i, g in enumerate(groups)],
             ],
             expand=True,

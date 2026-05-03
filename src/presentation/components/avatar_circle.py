@@ -15,7 +15,7 @@ def avatar_circle(
         height=size,
         bgcolor=bg_color,
         border_radius=size // 2,
-        alignment=ft.alignment.center,
+        alignment=ft.Alignment(0, 0),
         content=ft.Text(
             initials[:2].upper(),
             size=font_size,
