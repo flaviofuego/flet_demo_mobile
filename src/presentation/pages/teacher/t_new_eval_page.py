@@ -157,7 +157,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
         def _vis_card(label: str, subtitle: str, icon, val: str) -> ft.Container:
             sel        = vm.selected_visibility == val
-            icon_bg    = f"{TK_GOLD}33" if val == "private" else TK_SURFACE_ALT
+            icon_bg    = f"#33{TK_GOLD[1:]}" if val == "private" else TK_SURFACE_ALT
             icon_color = TK_GOLD if val == "private" else TK_TEXT_FAINT
             text_color = TK_GOLD if (val == "private" and sel) else TK_TEXT
             return ft.Container(
@@ -186,7 +186,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             on_tap=(lambda _: None) if disabled else _on_create,
             content=ft.Container(
                 expand=True,
-                bgcolor=f"{TK_GOLD}55" if disabled else TK_GOLD,
+                bgcolor=f"#55{TK_GOLD[1:]}" if disabled else TK_GOLD,
                 border_radius=14,
                 padding=ft.padding.symmetric(vertical=14),
                 alignment=ft.Alignment(0, 0),

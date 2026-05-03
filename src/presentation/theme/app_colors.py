@@ -12,6 +12,7 @@ SK_TEXT_FAINT    = "#A3A0C2"
 SK_PRIMARY       = "#7C83D6"
 SK_PRIMARY_MID   = "#6A72C9"
 SK_PRIMARY_LIGHT = "#EEEFFE"
+SK_SUCCESS       = "#059669"
 
 # Criterion accent colors (light mode)
 CRIT_BLUE   = "#0EA5E9"

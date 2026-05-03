@@ -33,7 +33,7 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                         ft.ProgressRing(
                             value=value,
                             color=color,
-                            bgcolor=f"{color}22",
+                            bgcolor=f"#22{color[1:]}",
                             width=60, height=60,
                             stroke_width=5,
                         ),
@@ -84,7 +84,7 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                     ft.Container(
                         width=34, height=34,
                         border_radius=10,
-                        bgcolor=f"{CRITERION_COLORS_DARK[i % 4]}26",
+                        bgcolor=f"#26{CRITERION_COLORS_DARK[i % 4][1:]}",
                         alignment=ft.Alignment(0, 0),
                         content=ft.Text(
                             s.name[:2].upper(), size=11,
@@ -227,7 +227,7 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                         ft.ProgressBar(
                             value=max(0.0, min(1.0, (group.average - 2) / 3))
                             if group.average > 0 else 0,
-                            bgcolor=f"{color}22", color=color, height=6,
+                            bgcolor=f"#22{color[1:]}", color=color, height=6,
                         ),
                     ]),
                 )

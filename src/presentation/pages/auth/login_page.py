@@ -26,7 +26,7 @@ def login_page(
     def _text()    -> str: return TK_TEXT_        if is_dark[0] else SK_TEXT
     def _faint()   -> str: return TK_TEXT_FAINT_  if is_dark[0] else SK_TEXT_FAINT
     def _accent()  -> str: return TK_GOLD         if is_dark[0] else SK_PRIMARY
-    def _icon_bg() -> str: return f"{TK_GOLD}33"  if is_dark[0] else SK_PRIMARY_LIGHT
+    def _icon_bg() -> str: return f"#33{TK_GOLD[1:]}"  if is_dark[0] else SK_PRIMARY_LIGHT
 
     email_field = ft.TextField(
         hint_text="Correo institucional",

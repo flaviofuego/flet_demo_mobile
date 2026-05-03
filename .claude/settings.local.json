@@ -21,7 +21,13 @@
       "Bash(Get-ChildItem -Recurse -Force -ErrorAction SilentlyContinue)",
       "Bash(Select-Object FullName)",
       "Bash(Find-String \"peerUn|peerun|peer_un|propuesta|jsx|tsx\")",
-      "PowerShell(cd \"e:\\\\Repos Git\\\\flet_demo_mobile\" && Get-ChildItem -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { \\($_.Name -match \"peerUn|peerun|peer_un|propuesta|\\\\.jsx|\\\\.tsx|screenshot\" -or $_.FullName -match \"peerUn|peerun|peer_un|propuesta|screenshot\"\\) -and $_.FullName -notmatch \"\\\\.git\" } | Select-Object FullName | Sort-Object FullName)"
+      "PowerShell(cd \"e:\\\\Repos Git\\\\flet_demo_mobile\" && Get-ChildItem -Recurse -Force -ErrorAction SilentlyContinue | Where-Object { \\($_.Name -match \"peerUn|peerun|peer_un|propuesta|\\\\.jsx|\\\\.tsx|screenshot\" -or $_.FullName -match \"peerUn|peerun|peer_un|propuesta|screenshot\"\\) -and $_.FullName -notmatch \"\\\\.git\" } | Select-Object FullName | Sort-Object FullName)",
+      "Bash(python -m py_compile src/presentation/pages/teacher/t_import_page.py)",
+      "Bash(python -c \"import flet as ft; print\\(dir\\(ft.padding\\)\\)\")",
+      "Bash(python -c \"from src.presentation.components.teacher_avatar import teacher_avatar; print\\('OK'\\)\")",
+      "Bash(python -m py_compile src/presentation/components/teacher_avatar.py src/presentation/pages/auth/login_page.py src/presentation/pages/auth/register_page.py src/presentation/pages/teacher/t_dash_page.py src/presentation/pages/teacher/t_import_page.py src/presentation/pages/teacher/t_course_manage_page.py src/presentation/pages/teacher/t_new_eval_page.py src/presentation/pages/teacher/t_results_page.py src/presentation/pages/teacher/t_profile_page.py src/presentation/pages/student/s_courses_page.py src/presentation/pages/student/s_peers_page.py src/presentation/pages/student/s_peer_score_page.py src/presentation/pages/student/s_my_results_page.py)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)"
     ]
   }
 }

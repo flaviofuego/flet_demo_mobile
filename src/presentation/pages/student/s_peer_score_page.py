@@ -23,7 +23,7 @@ def s_peer_score_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
     )
     save_btn_box = ft.Container(
         expand=True,
-        bgcolor=f"{SK_PRIMARY}55",
+        bgcolor=f"#55{SK_PRIMARY[1:]}",
         border_radius=14,
         padding=ft.padding.symmetric(vertical=14),
         alignment=ft.Alignment(0, 0),
@@ -84,7 +84,7 @@ def s_peer_score_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                     ft.Text(criterion.label, size=13, weight=ft.FontWeight.W_700,
                             color=SK_TEXT, expand=True),
                     ft.Container(
-                        bgcolor=f"{color}22", border_radius=8,
+                        bgcolor=f"#22{color[1:]}", border_radius=8,
                         padding=ft.padding.symmetric(horizontal=8, vertical=4),
                         visible=current is not None and current > 0,
                         content=ft.Text(
@@ -109,7 +109,7 @@ def s_peer_score_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
 
         disabled = not vm.all_criteria_scored
         save_btn.on_tap      = (lambda _: None) if disabled else _on_save
-        save_btn_box.bgcolor = f"{SK_PRIMARY}55" if disabled else SK_PRIMARY
+        save_btn_box.bgcolor = f"#55{SK_PRIMARY[1:]}" if disabled else SK_PRIMARY
 
         criterion_rows = [
             _criterion_row(c, CRITERION_COLORS[i])

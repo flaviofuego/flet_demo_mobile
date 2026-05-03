@@ -62,7 +62,7 @@ def s_peers_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             on_tap=(lambda _: None) if disabled else _on_submit,
             content=ft.Container(
                 expand=True,
-                bgcolor=f"{SK_PRIMARY}66" if disabled else SK_PRIMARY,
+                bgcolor=f"#66{SK_PRIMARY[1:]}" if disabled else SK_PRIMARY,
                 border_radius=14,
                 padding=ft.padding.symmetric(vertical=14),
                 alignment=ft.Alignment(0, 0),

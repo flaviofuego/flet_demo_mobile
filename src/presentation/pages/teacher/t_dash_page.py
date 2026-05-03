@@ -176,6 +176,7 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             open=True,
             content=ft.Container(
                 padding=24, bgcolor=TK_SURFACE,
+                border_radius=ft.border_radius.only(top_left=20, top_right=20),
                 content=ft.Column(tight=True, controls=[
                     ft.Row(spacing=12, controls=[
                         teacher_avatar(initials, size=48),
@@ -185,10 +186,28 @@ def t_dash_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                         ]),
                     ]),
                     ft.Divider(color=TK_BORDER),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.Icons.LOGOUT, color=TK_DANGER),
-                        title=ft.Text("Cerrar sesión", color=TK_DANGER),
-                        on_click=_logout,
+                    ft.GestureDetector(
+                        on_tap=_logout,
+                        content=ft.Container(
+                            expand=True,
+                            bgcolor=f"#33{TK_DANGER[1:]}",
+                            border_radius=14,
+                            border=ft.Border.all(1, f"#99{TK_DANGER[1:]}"),
+                            padding=ft.padding.symmetric(vertical=14),
+                            alignment=ft.Alignment(0, 0),
+                            content=ft.Row(
+                                spacing=8,
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                tight=True,
+                                controls=[
+                                    ft.Icon(ft.Icons.LOGOUT_ROUNDED,
+                                            size=16, color=TK_DANGER),
+                                    ft.Text("Cerrar sesión", size=14,
+                                            weight=ft.FontWeight.W_700,
+                                            color=TK_DANGER),
+                                ],
+                            ),
+                        ),
                     ),
                 ]),
             ),

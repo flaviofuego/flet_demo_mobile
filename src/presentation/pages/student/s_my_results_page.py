@@ -3,11 +3,9 @@ from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
     SK_BACKGROUND, SK_SURFACE, SK_SURFACE_ALT, SK_BORDER,
-    SK_TEXT, SK_TEXT_FAINT, SK_PRIMARY, CRITERION_COLORS,
+    SK_TEXT, SK_TEXT_FAINT, SK_PRIMARY, SK_SUCCESS, CRITERION_COLORS,
 )
 from src.presentation.viewmodels.student_viewmodel import StudentViewModel
-
-_SK_SUCCESS = "#059669"
 
 
 def s_my_results_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
@@ -49,6 +47,35 @@ def s_my_results_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             ]),
         )
 
+    def _avg_card(avg: float, vis_label: str) -> ft.Container:
+        color = _score_color(avg)
+        perf = ("Excelente" if avg >= 4.5 else "Muy bueno" if avg >= 4.0
+                else "Bueno" if avg >= 3.0 else "Regular")
+        return ft.Container(
+            bgcolor=SK_SURFACE_ALT, border_radius=18,
+            padding=ft.padding.symmetric(horizontal=20, vertical=24),
+            margin=ft.margin.only(bottom=16),
+            content=ft.Column(
+                horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=4,
+                controls=[
+                    ft.Text(f"{avg:.1f}" if avg > 0 else "—",
+                            size=52, weight=ft.FontWeight.W_800, color=color),
+                    ft.Text("Promedio general", size=12, color=SK_TEXT_FAINT),
+                    ft.Container(
+                        bgcolor=f"#17{SK_SUCCESS[1:]}",
+                        border_radius=10,
+                        border=ft.Border.all(1, f"#4D{SK_SUCCESS[1:]}"),
+                        padding=ft.padding.symmetric(horizontal=16, vertical=8),
+                        content=ft.Text(perf, size=12, weight=ft.FontWeight.W_700,
+                                        color=SK_SUCCESS),
+                        visible=avg > 0,
+                    ),
+                    ft.Text(vis_label, size=10, color=SK_TEXT_FAINT,
+                            text_align=ft.TextAlign.CENTER, visible=bool(vis_label)),
+                ],
+            ),
+        )
+
     def _build_body() -> ft.Control:
         results = vm.my_results
         ev      = vm.active_eval
@@ -73,42 +100,13 @@ def s_my_results_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                                            text_align=ft.TextAlign.CENTER),
                                    ]))
 
-        avg_color = _score_color(avg)
-        perf = ("Excelente" if avg >= 4.5 else "Muy bueno" if avg >= 4.0
-                else "Bueno" if avg >= 3.0 else "Regular")
-
-        avg_card = ft.Container(
-            bgcolor=SK_SURFACE_ALT, border_radius=18,
-            padding=ft.padding.symmetric(horizontal=20, vertical=24),
-            margin=ft.margin.only(bottom=16),
-            content=ft.Column(
-                horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=4,
-                controls=[
-                    ft.Text(f"{avg:.1f}" if avg > 0 else "—",
-                            size=52, weight=ft.FontWeight.W_800, color=avg_color),
-                    ft.Text("Promedio general", size=12, color=SK_TEXT_FAINT),
-                    ft.Container(
-                        bgcolor=f"{_SK_SUCCESS}17",
-                        border_radius=10,
-                        border=ft.Border.all(1, f"{_SK_SUCCESS}4D"),
-                        padding=ft.padding.symmetric(horizontal=16, vertical=8),
-                        content=ft.Text(perf, size=12, weight=ft.FontWeight.W_700,
-                                        color=_SK_SUCCESS),
-                        visible=avg > 0,
-                    ),
-                    ft.Text(vis_label, size=10, color=SK_TEXT_FAINT,
-                            text_align=ft.TextAlign.CENTER, visible=bool(vis_label)),
-                ],
-            ),
-        )
-
         criterion_cards = [
             _criterion_card(r.label, r.value, CRITERION_COLORS[i % len(CRITERION_COLORS)])
             for i, r in enumerate(results)
         ]
 
         return ft.ListView(
-            controls=[avg_card, *criterion_cards], expand=True,
+            controls=[_avg_card(avg, vis_label), *criterion_cards], expand=True,
             padding=ft.padding.symmetric(horizontal=16, vertical=8),
         )
 

@@ -143,7 +143,7 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                         on_tap=_delete,
                         content=ft.Container(
                             padding=6,
-                            bgcolor=f"{TK_DANGER}1A",
+                            bgcolor=f"#1A{TK_DANGER[1:]}",
                             border_radius=8,
                             content=ft.Icon(ft.Icons.DELETE_OUTLINE_ROUNDED,
                                             size=16, color=TK_DANGER),
@@ -171,7 +171,7 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             on_tap=(lambda _: None) if vm.import_loading else _pick_file,
             content=ft.Container(
                 expand=True,
-                bgcolor=f"{TK_GOLD}88" if vm.import_loading else TK_GOLD,
+                bgcolor=f"#88{TK_GOLD[1:]}" if vm.import_loading else TK_GOLD,
                 border_radius=14,
                 padding=ft.padding.symmetric(vertical=16),
                 alignment=ft.Alignment(0, 0),

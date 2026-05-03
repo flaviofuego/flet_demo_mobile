@@ -44,7 +44,7 @@ def s_eval_list_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                     controls=[
                         ft.Text(ev.name, size=14, weight=ft.FontWeight.W_600, color=SK_TEXT),
                         ft.Container(
-                            bgcolor=f"{color}22", border_radius=6,
+                            bgcolor=f"#22{color[1:]}", border_radius=6,
                             padding=ft.padding.symmetric(horizontal=8, vertical=2),
                             content=ft.Text(label, size=10, color=color, weight=ft.FontWeight.W_600),
                         ),
