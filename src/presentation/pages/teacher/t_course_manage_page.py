@@ -12,7 +12,7 @@ def _pill_btn(text: str, on_tap, bg: str, fg: str, expand=False) -> ft.GestureDe
     return ft.GestureDetector(
         on_tap=on_tap,
         content=ft.Container(
-            expand=expand, bgcolor=bg, border_radius=30,
+            expand=expand, bgcolor=bg, border_radius=14,
             padding=ft.padding.symmetric(horizontal=20, vertical=13),
             alignment=ft.Alignment(0, 0),
             content=ft.Text(text, size=14, weight=ft.FontWeight.W_700,
@@ -37,15 +37,25 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 ],
             ))
         return ft.Container(
-            bgcolor=TK_SURFACE, border_radius=20,
+            bgcolor=TK_SURFACE, border_radius=14,
             border=ft.Border.all(1, TK_BORDER),
             padding=14, margin=ft.margin.only(bottom=8),
-            content=ft.Row(controls=[
+            content=ft.Row(spacing=12, controls=[
+                ft.Container(
+                    width=40, height=40,
+                    bgcolor=TK_SURFACE_ALT, border_radius=10,
+                    alignment=ft.Alignment(0, 0),
+                    content=ft.Icon(ft.Icons.SCHOOL_ROUNDED,
+                                    color=TK_GOLD, size=20),
+                ),
                 ft.Column(expand=True, spacing=2, controls=[
-                    ft.Text(course.name, size=14, weight=ft.FontWeight.W_600, color=TK_TEXT),
-                    ft.Text(course.code or "Sin código", size=11, color=TK_TEXT_FAINT),
+                    ft.Text(course.name, size=14, weight=ft.FontWeight.W_600,
+                            color=TK_TEXT),
+                    ft.Text(course.code or "Sin código", size=11,
+                            color=TK_TEXT_FAINT),
                 ]),
-                ft.IconButton(ft.Icons.DELETE_OUTLINE, icon_color=TK_DANGER, on_click=_delete),
+                ft.IconButton(ft.Icons.DELETE_OUTLINE, icon_color=TK_DANGER,
+                              on_click=_delete),
             ]),
         )
 
@@ -70,14 +80,16 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             content=ft.Container(
                 bgcolor=TK_SURFACE, padding=24,
                 content=ft.Column(tight=True, spacing=16, controls=[
-                    ft.Text("Nuevo curso", size=20, weight=ft.FontWeight.W_700, color=TK_TEXT),
+                    ft.Text("Nuevo curso", size=20, weight=ft.FontWeight.W_700,
+                            color=TK_TEXT),
                     ft.Column(spacing=6, controls=[
                         ft.Text("Nombre", size=12, color=TK_TEXT_FAINT),
                         nf,
                         ft.Text("Código (opcional)", size=12, color=TK_TEXT_FAINT),
                         cf,
                     ]),
-                    _pill_btn("Crear curso", _create, TK_GOLD, TK_BACKGROUND, expand=True),
+                    _pill_btn("Crear curso", _create, TK_GOLD, TK_BACKGROUND,
+                               expand=True),
                 ]),
             ),
         )
@@ -92,11 +104,13 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 content=ft.Column(
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=8,
                     controls=[
-                        ft.Icon(ft.Icons.SCHOOL_OUTLINED, size=56, color=TK_TEXT_FAINT),
+                        ft.Icon(ft.Icons.SCHOOL_OUTLINED, size=56,
+                                color=TK_TEXT_FAINT),
                         ft.Text("Sin cursos creados", size=15,
                                 weight=ft.FontWeight.W_600, color=TK_TEXT_FAINT),
                         ft.Text("Toca \"Nuevo\" para añadir tu primer curso",
-                                size=12, color=TK_TEXT_FAINT, text_align=ft.TextAlign.CENTER),
+                                size=12, color=TK_TEXT_FAINT,
+                                text_align=ft.TextAlign.CENTER),
                     ],
                 ),
             )
@@ -116,7 +130,7 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     back_btn = ft.GestureDetector(
         on_tap=lambda _: page.go("/teacher/import"),
         content=ft.Container(
-            bgcolor=TK_SURFACE, border_radius=20,
+            bgcolor=TK_SURFACE, border_radius=10,
             padding=ft.padding.symmetric(horizontal=12, vertical=8),
             content=ft.Row(spacing=4, tight=True, controls=[
                 ft.Icon(ft.Icons.CHEVRON_LEFT, size=16, color=TK_TEXT),
@@ -126,7 +140,8 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     )
 
     page_header = ft.Container(
-        padding=ft.padding.only(left=16, right=16, top=8, bottom=4),
+        bgcolor=TK_SURFACE,
+        padding=ft.padding.only(left=16, right=16, top=8, bottom=12),
         content=ft.Column(spacing=8, controls=[
             back_btn,
             ft.Row(
@@ -134,14 +149,15 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 vertical_alignment=ft.CrossAxisAlignment.START,
                 controls=[
                     ft.Column(spacing=2, controls=[
-                        ft.Text("Mis cursos", size=24, weight=ft.FontWeight.W_800, color=TK_TEXT),
+                        ft.Text("Mis cursos", size=24, weight=ft.FontWeight.W_800,
+                                color=TK_TEXT),
                         ft.Text("Organiza tus evaluaciones por curso",
                                 size=13, color=TK_TEXT_FAINT),
                     ]),
                     ft.GestureDetector(
                         on_tap=lambda _: page.show_dialog(_add_sheet()),
                         content=ft.Container(
-                            bgcolor=TK_GOLD, border_radius=20,
+                            bgcolor=TK_GOLD, border_radius=10,
                             padding=ft.padding.symmetric(horizontal=14, vertical=8),
                             content=ft.Text("+ Nuevo", size=13, color=TK_BACKGROUND,
                                             weight=ft.FontWeight.W_600),
@@ -159,7 +175,11 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             ft.SafeArea(
                 expand=True,
                 content=ft.Column(expand=True, spacing=0,
-                                  controls=[page_header, content]),
+                                  controls=[
+                                      page_header,
+                                      ft.Divider(height=1, color=TK_BORDER),
+                                      content,
+                                  ]),
             ),
         ],
     )

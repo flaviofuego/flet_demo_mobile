@@ -19,7 +19,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         focused_border_color=TK_GOLD,
         border_color=TK_BORDER,
         bgcolor=TK_SURFACE,
-        border_radius=12,
+        border_radius=13,
         on_change=lambda e: setattr(vm, "eval_name", e.control.value),
     )
 
@@ -28,7 +28,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
     def _selector_row(label: str, on_tap, disabled=False) -> ft.Container:
         return ft.Container(
-            bgcolor=TK_SURFACE, border_radius=16,
+            bgcolor=TK_SURFACE, border_radius=13,
             border=ft.Border.all(1, TK_BORDER),
             padding=ft.padding.symmetric(horizontal=16, vertical=16),
             on_click=None if disabled else on_tap,
@@ -161,7 +161,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             icon_color = TK_GOLD if val == "private" else TK_TEXT_FAINT
             text_color = TK_GOLD if (val == "private" and sel) else TK_TEXT
             return ft.Container(
-                bgcolor=TK_SURFACE, border_radius=16,
+                bgcolor=TK_SURFACE, border_radius=13,
                 border=ft.Border.all(1, TK_GOLD if sel else TK_BORDER),
                 padding=14, margin=ft.margin.only(bottom=8),
                 on_click=lambda _, v=val: _pick_vis(v),
@@ -172,7 +172,8 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                         content=ft.Icon(icon, color=icon_color, size=20),
                     ),
                     ft.Column(expand=True, spacing=2, controls=[
-                        ft.Text(label,    size=14, weight=ft.FontWeight.W_600, color=text_color),
+                        ft.Text(label,    size=14, weight=ft.FontWeight.W_600,
+                                color=text_color),
                         ft.Text(subtitle, size=11, color=TK_TEXT_FAINT),
                     ]),
                 ]),
@@ -186,7 +187,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             content=ft.Container(
                 expand=True,
                 bgcolor=f"{TK_GOLD}55" if disabled else TK_GOLD,
-                border_radius=30,
+                border_radius=14,
                 padding=ft.padding.symmetric(vertical=14),
                 alignment=ft.Alignment(0, 0),
                 content=ft.Text(
@@ -204,22 +205,22 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 _section_label("NOMBRE"),
                 ft.Container(height=4),
                 name_field,
-                ft.Container(height=12),
+                ft.Container(height=18),
                 _section_label("CURSO"),
                 ft.Container(height=4),
                 _selector_row(course_label,
                               lambda _: page.show_dialog(_course_picker_sheet())),
-                ft.Container(height=12),
+                ft.Container(height=18),
                 _section_label("CATEGORÍA DE GRUPOS"),
                 ft.Container(height=4),
                 _selector_row(cat_label,
                               lambda _: page.show_dialog(_category_picker_sheet()),
                               disabled=vm.selected_course_id is None),
-                ft.Container(height=12),
+                ft.Container(height=18),
                 _section_label("VENTANA DE TIEMPO"),
                 ft.Container(height=6),
                 hours_chips,
-                ft.Container(height=12),
+                ft.Container(height=18),
                 _section_label("VISIBILIDAD DE RESULTADOS"),
                 ft.Container(height=6),
                 _vis_card("Pública",
@@ -250,7 +251,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     back_btn = ft.GestureDetector(
         on_tap=lambda _: page.go("/teacher/dash"),
         content=ft.Container(
-            bgcolor=TK_SURFACE, border_radius=20,
+            bgcolor=TK_SURFACE, border_radius=10,
             padding=ft.padding.symmetric(horizontal=12, vertical=8),
             content=ft.Row(spacing=4, tight=True, controls=[
                 ft.Icon(ft.Icons.CHEVRON_LEFT, size=16, color=TK_TEXT),
@@ -260,10 +261,12 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     )
 
     page_header = ft.Container(
-        padding=ft.padding.only(left=16, right=16, top=8, bottom=4),
+        bgcolor=TK_SURFACE,
+        padding=ft.padding.only(left=16, right=16, top=8, bottom=12),
         content=ft.Column(spacing=8, controls=[
             back_btn,
-            ft.Text("Nueva evaluación", size=24, weight=ft.FontWeight.W_800, color=TK_TEXT),
+            ft.Text("Nueva evaluación", size=24, weight=ft.FontWeight.W_800,
+                    color=TK_TEXT),
         ]),
     )
 
@@ -274,7 +277,11 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             ft.SafeArea(
                 expand=True,
                 content=ft.Column(expand=True, spacing=0,
-                                  controls=[page_header, content]),
+                                  controls=[
+                                      page_header,
+                                      ft.Divider(height=1, color=TK_BORDER),
+                                      content,
+                                  ]),
             ),
         ],
     )

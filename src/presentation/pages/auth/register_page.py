@@ -52,7 +52,7 @@ def register_page(
         color=TK_BACKGROUND, text_align=ft.TextAlign.CENTER,
     )
     register_box = ft.Container(
-        expand=True, bgcolor=_accent(), border_radius=30,
+        expand=True, bgcolor=_accent(), border_radius=14,
         padding=ft.padding.symmetric(vertical=14),
         alignment=ft.Alignment(0, 0),
         content=register_label,

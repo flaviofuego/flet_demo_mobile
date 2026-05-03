@@ -1,4 +1,4 @@
-﻿"""SCoursesPage — student's main screen showing their evaluations."""
+"""SCoursesPage — student's main screen showing their evaluations."""
 from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
@@ -12,19 +12,19 @@ from src.presentation.viewmodels.student_viewmodel import StudentViewModel, Eval
 def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
     content = ft.Container(expand=True)
 
-    STATUS_CONFIG = {
-        EvalStudentStatus.active_pending:   ("Pendiente",   "#7C83D6", "#EEEFFE"),
-        EvalStudentStatus.active_completed: ("Completada",  "#059669", "#ECFDF5"),
-        EvalStudentStatus.closed_completed: ("Cerrada ✓",   "#6B7280", "#F3F4F6"),
-        EvalStudentStatus.closed_not_done:  ("Sin hacer",   "#EF4444", "#FEF2F2"),
-    }
-
     def _badge(status: EvalStudentStatus) -> ft.Container:
-        label, color, bg = STATUS_CONFIG.get(status, ("—", SK_TEXT_FAINT, SK_SURFACE_ALT))
+        cfg = {
+            EvalStudentStatus.active_pending:   (SK_PRIMARY,    SK_PRIMARY_LIGHT, "ACTIVA"),
+            EvalStudentStatus.active_completed: ("#059669",     "#D1FAE5",        "COMPLETADA"),
+            EvalStudentStatus.closed_completed: (SK_TEXT_FAINT, SK_SURFACE_ALT,   "CERRADA"),
+            EvalStudentStatus.closed_not_done:  ("#EF4444",     "#FEF2F2",        "PERDIDA"),
+        }.get(status, (SK_TEXT_FAINT, SK_SURFACE_ALT, "—"))
+        text_color, bg_color, label = cfg
         return ft.Container(
-            bgcolor=bg, border_radius=6,
+            bgcolor=bg_color, border_radius=6,
             padding=ft.padding.symmetric(horizontal=8, vertical=3),
-            content=ft.Text(label, size=10, color=color, weight=ft.FontWeight.W_600),
+            content=ft.Text(label, size=10, weight=ft.FontWeight.W_700,
+                            color=text_color),
         )
 
     def _eval_card(ev) -> ft.Container:
@@ -43,7 +43,7 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             actions.append(ft.GestureDetector(
                 on_tap=_evaluate,
                 content=ft.Container(
-                    bgcolor=SK_PRIMARY, border_radius=20,
+                    bgcolor=SK_PRIMARY, border_radius=14,
                     padding=ft.padding.symmetric(horizontal=14, vertical=8),
                     content=ft.Text("Evaluar", size=13, weight=ft.FontWeight.W_700,
                                     color="#FFFFFF"),
@@ -58,8 +58,10 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             content=ft.Column(spacing=8, controls=[
                 ft.Row(controls=[
                     ft.Column(expand=True, spacing=2, controls=[
-                        ft.Text(ev.name, size=14, weight=ft.FontWeight.W_600, color=SK_TEXT),
-                        ft.Text(ev.course_name or ev.category_name, size=11, color=SK_TEXT_FAINT),
+                        ft.Text(ev.name, size=14, weight=ft.FontWeight.W_600,
+                                color=SK_TEXT),
+                        ft.Text(ev.course_name or ev.category_name,
+                                size=11, color=SK_TEXT_FAINT),
                     ]),
                     _badge(status),
                 ]),
@@ -81,24 +83,32 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             bgcolor=SK_PRIMARY, border_radius=18, padding=20,
             margin=ft.margin.only(bottom=16),
             content=ft.Column(spacing=6, controls=[
-                ft.Text("Evaluación activa", size=11, color="#EEEFFE", weight=ft.FontWeight.W_600),
+                ft.Text("Evaluación activa", size=11, color="#EEEFFE",
+                        weight=ft.FontWeight.W_600),
                 ft.Text(ev.name, size=18, weight=ft.FontWeight.W_800, color="#FFFFFF"),
                 ft.Text(ev.category_name, size=12, color="#EEEFFE"),
                 ft.Container(height=4),
-                ft.ProgressBar(value=vm.eval_progress, bgcolor="#EEEFFE", color="#FFFFFF"),
+                ft.ProgressBar(value=vm.eval_progress, bgcolor="#EEEFFE",
+                               color="#FFFFFF"),
                 ft.Row(
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     controls=[
-                        ft.Text(f"{vm.done_count}/{vm.total_peers} evaluados", size=11, color="#EEEFFE"),
+                        ft.Text(f"{vm.done_count}/{vm.total_peers} evaluados",
+                                size=11, color="#EEEFFE"),
                         ft.GestureDetector(
-                            on_tap=(lambda _: None) if status == EvalStudentStatus.active_completed else _on_evaluate,
+                            on_tap=(lambda _: None)
+                            if status == EvalStudentStatus.active_completed
+                            else _on_evaluate,
                             content=ft.Container(
                                 bgcolor="#FFFFFF",
-                                border_radius=20,
+                                border_radius=14,
                                 padding=ft.padding.symmetric(horizontal=14, vertical=8),
                                 content=ft.Text(
-                                    "Completada" if status == EvalStudentStatus.active_completed else "Evaluar ahora",
-                                    size=13, weight=ft.FontWeight.W_700, color=SK_PRIMARY,
+                                    "Completada"
+                                    if status == EvalStudentStatus.active_completed
+                                    else "Evaluar ahora",
+                                    size=13, weight=ft.FontWeight.W_700,
+                                    color=SK_PRIMARY,
                                 ),
                             ),
                         ),
@@ -126,7 +136,8 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                     ft.Row(spacing=12, controls=[
                         avatar_circle(initials, size=48, bg_color=SK_PRIMARY),
                         ft.Column(spacing=2, controls=[
-                            ft.Text(name, size=16, weight=ft.FontWeight.W_600, color=SK_TEXT),
+                            ft.Text(name, size=16, weight=ft.FontWeight.W_600,
+                                    color=SK_TEXT),
                             ft.Text(email, size=12, color=SK_TEXT_FAINT),
                         ]),
                     ]),
@@ -151,8 +162,10 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                                content=ft.Column(
                                    horizontal_alignment=ft.CrossAxisAlignment.CENTER,
                                    controls=[
-                                       ft.Icon(ft.Icons.INBOX_OUTLINED, size=56, color=SK_TEXT_FAINT),
-                                       ft.Text("Sin evaluaciones", color=SK_TEXT_FAINT, size=14),
+                                       ft.Icon(ft.Icons.INBOX_OUTLINED, size=56,
+                                               color=SK_TEXT_FAINT),
+                                       ft.Text("Sin evaluaciones", color=SK_TEXT_FAINT,
+                                               size=14),
                                    ]))
         active = [e for e in evals if e.is_active]
         closed = [e for e in evals if not e.is_active]

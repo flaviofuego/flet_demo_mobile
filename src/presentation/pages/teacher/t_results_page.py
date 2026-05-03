@@ -21,55 +21,91 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         if score >= 2.5: return TK_WARNING
         return TK_DANGER
 
+    def _criterion_ring(score: float, color: str, label: str) -> ft.Column:
+        value = max(0.0, min(1.0, score / 5.0)) if score > 0 else 0.0
+        return ft.Column(
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
+            spacing=6,
+            controls=[
+                ft.Stack(
+                    width=60, height=60,
+                    controls=[
+                        ft.ProgressRing(
+                            value=value,
+                            color=color,
+                            bgcolor=f"{color}22",
+                            width=60, height=60,
+                            stroke_width=5,
+                        ),
+                        ft.Container(
+                            width=60, height=60,
+                            alignment=ft.Alignment(0, 0),
+                            content=ft.Text(
+                                f"{score:.1f}" if score > 0 else "—",
+                                size=13, weight=ft.FontWeight.W_800,
+                                color=color,
+                            ),
+                        ),
+                    ],
+                ),
+                ft.Text(label, size=9, color=TK_TEXT_FAINT,
+                        weight=ft.FontWeight.W_600,
+                        text_align=ft.TextAlign.CENTER),
+            ],
+        )
+
     def _build_drill(group) -> ft.Control:
         def _back(_) -> None:
             vm.drill_group_index = None
             content.content = _build_body()
             page.update()
 
-        crit_rows = [
-            ft.Container(
-                bgcolor=TK_SURFACE, border_radius=16,
-                border=ft.Border.all(1, TK_BORDER),
-                padding=12, margin=ft.margin.only(bottom=6),
-                content=ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    controls=[
-                        ft.Row(spacing=8, controls=[
-                            ft.Container(width=8, height=8,
-                                         bgcolor=CRITERION_COLORS_DARK[i], border_radius=4),
-                            ft.Text(CRITERION_LABELS[i], size=12, color=TK_TEXT),
-                        ]),
-                        ft.Text(f"{score:.1f}" if score > 0 else "—",
-                                size=16, weight=ft.FontWeight.W_700,
-                                color=_score_color(score)),
-                    ],
-                ),
-            )
-            for i, score in enumerate(group.criteria)
-        ]
+        rings_row = ft.Container(
+            bgcolor=TK_SURFACE_ALT, border_radius=16, padding=18,
+            margin=ft.margin.only(bottom=12),
+            content=ft.Row(
+                alignment=ft.MainAxisAlignment.SPACE_AROUND,
+                controls=[
+                    _criterion_ring(group.criteria[i],
+                                    CRITERION_COLORS_DARK[i],
+                                    CRITERION_LABELS[i])
+                    for i in range(len(group.criteria))
+                ],
+            ),
+        )
 
         student_rows = [
             ft.Container(
-                bgcolor=TK_SURFACE_ALT, border_radius=12,
-                padding=10, margin=ft.margin.only(bottom=4),
-                content=ft.Row(
-                    alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
-                    controls=[
-                        ft.Text(s.name, size=13, color=TK_TEXT),
-                        ft.Text(f"{s.score:.1f}" if s.score > 0 else "—",
-                                size=13, weight=ft.FontWeight.W_700,
-                                color=_score_color(s.score)),
-                    ],
-                ),
+                bgcolor=TK_SURFACE, border_radius=14,
+                border=ft.Border.all(1, TK_BORDER),
+                padding=ft.padding.symmetric(horizontal=14, vertical=12),
+                margin=ft.margin.only(bottom=8),
+                content=ft.Row(spacing=12, controls=[
+                    ft.Container(
+                        width=34, height=34,
+                        border_radius=10,
+                        bgcolor=f"{CRITERION_COLORS_DARK[i % 4]}26",
+                        alignment=ft.Alignment(0, 0),
+                        content=ft.Text(
+                            s.name[:2].upper(), size=11,
+                            weight=ft.FontWeight.W_700,
+                            color=CRITERION_COLORS_DARK[i % 4],
+                        ),
+                    ),
+                    ft.Text(s.name, size=13, weight=ft.FontWeight.W_600,
+                            color=TK_TEXT, expand=True),
+                    ft.Text(f"{s.score:.1f}" if s.score > 0 else "—",
+                            size=18, weight=ft.FontWeight.W_800,
+                            color=_score_color(s.score)),
+                ]),
             )
-            for s in group.students
+            for i, s in enumerate(group.students)
         ]
 
         back_btn = ft.GestureDetector(
             on_tap=_back,
             content=ft.Container(
-                bgcolor=TK_SURFACE, border_radius=20,
+                bgcolor=TK_SURFACE, border_radius=10,
                 padding=ft.padding.symmetric(horizontal=12, vertical=8),
                 content=ft.Row(spacing=4, tight=True, controls=[
                     ft.Icon(ft.Icons.CHEVRON_LEFT, size=16, color=TK_TEXT),
@@ -80,24 +116,26 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
         return ft.Column(expand=True, controls=[
             ft.Container(
-                padding=ft.padding.only(left=16, right=16, top=8, bottom=4),
+                bgcolor=TK_SURFACE,
+                padding=ft.padding.only(left=16, right=16, top=8, bottom=12),
                 content=ft.Column(spacing=8, controls=[
                     back_btn,
-                    ft.Text(group.name, size=20, weight=ft.FontWeight.W_700, color=TK_TEXT),
-                    ft.Text(f"Promedio: {group.average:.1f}" if group.average > 0 else "Sin datos",
+                    ft.Text(group.name, size=20, weight=ft.FontWeight.W_700,
+                            color=TK_TEXT),
+                    ft.Text(f"Promedio: {group.average:.1f}"
+                            if group.average > 0 else "Sin datos",
                             size=13, color=_score_color(group.average)),
                 ]),
             ),
+            ft.Divider(height=1, color=TK_BORDER),
             ft.ListView(
                 expand=True,
-                padding=ft.padding.symmetric(horizontal=16),
+                padding=ft.padding.symmetric(horizontal=16, vertical=12),
                 controls=[
-                    ft.Text("POR CRITERIO", size=10, color=TK_TEXT_FAINT,
-                            weight=ft.FontWeight.W_600),
-                    *crit_rows,
-                    ft.Container(height=8),
+                    rings_row,
                     ft.Text("POR ESTUDIANTE", size=10, color=TK_TEXT_FAINT,
                             weight=ft.FontWeight.W_600),
+                    ft.Container(height=6),
                     *student_rows,
                 ],
             ),
@@ -112,10 +150,11 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
         stats = ft.Row(spacing=8, controls=[
             ft.Container(
-                expand=True, bgcolor=TK_SURFACE, border_radius=16,
+                expand=True, bgcolor=TK_SURFACE, border_radius=14,
                 border=ft.Border.all(1, TK_BORDER), padding=14,
                 content=ft.Column(spacing=6, controls=[
-                    ft.Container(width=28, height=3, bgcolor=TK_GOLD, border_radius=2),
+                    ft.Container(width=28, height=3, bgcolor=TK_GOLD,
+                                 border_radius=2),
                     ft.Text(f"{overall:.1f}" if overall > 0 else "—",
                             size=26, weight=ft.FontWeight.W_900,
                             color=_score_color(overall) if overall > 0 else TK_TEXT_FAINT),
@@ -124,7 +163,7 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 ]),
             ),
             ft.Container(
-                expand=True, bgcolor=TK_SURFACE, border_radius=16,
+                expand=True, bgcolor=TK_SURFACE, border_radius=14,
                 border=ft.Border.all(1, TK_BORDER), padding=14,
                 content=ft.Column(spacing=6, controls=[
                     ft.Text(str(len(groups)), size=26, weight=ft.FontWeight.W_900,
@@ -137,16 +176,19 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
         if not groups:
             empty = ft.Container(
-                bgcolor=TK_SURFACE, border_radius=16,
+                bgcolor=TK_SURFACE, border_radius=14,
                 border=ft.Border.all(1, TK_BORDER), padding=32,
                 content=ft.Column(
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER, spacing=8,
                     controls=[
-                        ft.Icon(ft.Icons.MONITOR_OUTLINED, size=48, color=TK_TEXT_FAINT),
+                        ft.Icon(ft.Icons.MONITOR_OUTLINED, size=48,
+                                color=TK_TEXT_FAINT),
                         ft.Text("Sin respuestas aún", size=15,
                                 weight=ft.FontWeight.W_600, color=TK_TEXT_FAINT),
-                        ft.Text("Los resultados aparecerán cuando los estudiantes\nenvíen sus evaluaciones",
-                                size=12, color=TK_TEXT_FAINT, text_align=ft.TextAlign.CENTER),
+                        ft.Text("Los resultados aparecerán cuando los estudiantes\n"
+                                "envíen sus evaluaciones",
+                                size=12, color=TK_TEXT_FAINT,
+                                text_align=ft.TextAlign.CENTER),
                     ],
                 ),
             )
@@ -164,7 +206,7 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                     content.content = _build_drill(group)
                     page.update()
                 return ft.Container(
-                    bgcolor=TK_SURFACE, border_radius=16,
+                    bgcolor=TK_SURFACE, border_radius=14,
                     border=ft.Border.all(1, TK_BORDER),
                     padding=14, margin=ft.margin.only(bottom=8),
                     on_click=_drill,
@@ -172,12 +214,16 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                         ft.Row(
                             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                             controls=[
-                                ft.Text(group.name, size=14, weight=ft.FontWeight.W_600, color=TK_TEXT),
-                                ft.Text(f"{group.average:.1f}" if group.average > 0 else "—",
-                                        size=18, weight=ft.FontWeight.W_900, color=color),
+                                ft.Text(group.name, size=14,
+                                        weight=ft.FontWeight.W_600, color=TK_TEXT),
+                                ft.Text(f"{group.average:.1f}"
+                                        if group.average > 0 else "—",
+                                        size=18, weight=ft.FontWeight.W_900,
+                                        color=color),
                             ],
                         ),
-                        ft.Text(f"{len(group.students)} miembros", size=11, color=TK_TEXT_FAINT),
+                        ft.Text(f"{len(group.students)} miembros",
+                                size=11, color=TK_TEXT_FAINT),
                         ft.ProgressBar(
                             value=max(0.0, min(1.0, (group.average - 2) / 3))
                             if group.average > 0 else 0,
@@ -214,7 +260,7 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     back_btn = ft.GestureDetector(
         on_tap=lambda _: page.go("/teacher/dash"),
         content=ft.Container(
-            bgcolor=TK_SURFACE, border_radius=20,
+            bgcolor=TK_SURFACE, border_radius=10,
             padding=ft.padding.symmetric(horizontal=12, vertical=8),
             content=ft.Row(spacing=4, tight=True, controls=[
                 ft.Icon(ft.Icons.CHEVRON_LEFT, size=16, color=TK_TEXT),
@@ -227,7 +273,8 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                  if vm.selected_eval_for_results else "Vista general")
 
     page_header = ft.Container(
-        padding=ft.padding.only(left=16, right=16, top=8, bottom=4),
+        bgcolor=TK_SURFACE,
+        padding=ft.padding.only(left=16, right=16, top=8, bottom=12),
         content=ft.Column(spacing=4, controls=[
             back_btn,
             ft.Text("Resultados", size=24, weight=ft.FontWeight.W_800, color=TK_TEXT),
@@ -242,7 +289,11 @@ def t_results_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             ft.SafeArea(
                 expand=True,
                 content=ft.Column(expand=True, spacing=0,
-                                  controls=[page_header, content]),
+                                  controls=[
+                                      page_header,
+                                      ft.Divider(height=1, color=TK_BORDER),
+                                      content,
+                                  ]),
             ),
         ],
     )

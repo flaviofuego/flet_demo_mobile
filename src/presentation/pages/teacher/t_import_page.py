@@ -6,7 +6,7 @@ from src.presentation.theme.app_colors import (
     TK_BACKGROUND, TK_SURFACE, TK_SURFACE_ALT, TK_BORDER,
     TK_TEXT, TK_TEXT_MID, TK_TEXT_FAINT, TK_GOLD, TK_GOLD_LIGHT, TK_DANGER,
 )
-from src.presentation.components.avatar_circle import avatar_circle
+from src.presentation.components.teacher_avatar import teacher_avatar
 from src.presentation.viewmodels.teacher_viewmodel import TeacherViewModel
 
 
@@ -71,7 +71,7 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             for m in group.members
         ]
         return ft.Container(
-            padding=ft.padding.fromLTRB(14, 10, 14, 10),
+            padding=ft.padding.only(left=14, top=10, right=14, bottom=10),
             content=ft.Column(spacing=6, controls=[
                 ft.Row(controls=[
                     ft.Icon(ft.Icons.GROUP_OUTLINED, size=14, color=TK_GOLD),
@@ -107,7 +107,7 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                         on_tap=lambda _: (vm.delete_category(cat.id),
                                           page.pop_dialog()),
                         content=ft.Container(
-                            bgcolor=TK_DANGER, border_radius=20,
+                            bgcolor=TK_DANGER, border_radius=14,
                             padding=ft.padding.symmetric(
                                 horizontal=16, vertical=10),
                             content=ft.Text("Eliminar", size=13,
@@ -160,7 +160,7 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 body.append(_group_row(g))
 
         return ft.Container(
-            bgcolor=TK_SURFACE, border_radius=20,
+            bgcolor=TK_SURFACE, border_radius=14,
             border=ft.Border.all(1, TK_BORDER),
             margin=ft.margin.only(bottom=8),
             content=ft.Column(spacing=0, controls=body),
@@ -172,7 +172,7 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             content=ft.Container(
                 expand=True,
                 bgcolor=f"{TK_GOLD}88" if vm.import_loading else TK_GOLD,
-                border_radius=30,
+                border_radius=14,
                 padding=ft.padding.symmetric(vertical=16),
                 alignment=ft.Alignment(0, 0),
                 content=ft.Row(
@@ -196,7 +196,7 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
         if not vm.categories:
             empty = ft.Container(
-                bgcolor=TK_SURFACE, border_radius=20,
+                bgcolor=TK_SURFACE, border_radius=14,
                 border=ft.Border.all(1, TK_BORDER), padding=32,
                 content=ft.Column(
                     horizontal_alignment=ft.CrossAxisAlignment.CENTER,
@@ -243,14 +243,14 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     email    = t.email   if t else ""
 
     header = ft.Container(
-        padding=ft.padding.only(left=16, right=16, top=8, bottom=4),
+        bgcolor=TK_SURFACE,
+        padding=ft.padding.only(left=16, right=16, top=8, bottom=12),
         content=ft.Row(
             alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             vertical_alignment=ft.CrossAxisAlignment.CENTER,
             controls=[
-                ft.Row(spacing=10, controls=[
-                    avatar_circle(initials, size=36, bg_color=TK_GOLD,
-                                  text_color=TK_BACKGROUND),
+                ft.Row(spacing=12, controls=[
+                    teacher_avatar(initials, size=52),
                     ft.Column(spacing=1, controls=[
                         ft.Text(name,  size=14, weight=ft.FontWeight.W_600,
                                 color=TK_TEXT),
@@ -260,7 +260,7 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
                 ft.GestureDetector(
                     on_tap=lambda _: page.go("/teacher/courses"),
                     content=ft.Container(
-                        bgcolor=TK_SURFACE_ALT, border_radius=20,
+                        bgcolor=TK_SURFACE_ALT, border_radius=10,
                         border=ft.Border.all(1, TK_BORDER),
                         padding=ft.padding.symmetric(horizontal=12, vertical=6),
                         content=ft.Row(spacing=4, tight=True, controls=[
@@ -294,7 +294,12 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             ft.SafeArea(
                 expand=True,
                 content=ft.Column(expand=True, spacing=0,
-                                  controls=[header, title_block, content]),
+                                  controls=[
+                                      header,
+                                      ft.Divider(height=1, color=TK_BORDER),
+                                      title_block,
+                                      content,
+                                  ]),
             ),
         ],
     )
