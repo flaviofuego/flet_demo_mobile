@@ -27,7 +27,10 @@
       "Bash(python -c \"from src.presentation.components.teacher_avatar import teacher_avatar; print\\('OK'\\)\")",
       "Bash(python -m py_compile src/presentation/components/teacher_avatar.py src/presentation/pages/auth/login_page.py src/presentation/pages/auth/register_page.py src/presentation/pages/teacher/t_dash_page.py src/presentation/pages/teacher/t_import_page.py src/presentation/pages/teacher/t_course_manage_page.py src/presentation/pages/teacher/t_new_eval_page.py src/presentation/pages/teacher/t_results_page.py src/presentation/pages/teacher/t_profile_page.py src/presentation/pages/student/s_courses_page.py src/presentation/pages/student/s_peers_page.py src/presentation/pages/student/s_peer_score_page.py src/presentation/pages/student/s_my_results_page.py)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(Get-ChildItem -Path \"E:\\\\Repos Git\\\\flet_demo_mobile\" -Directory)",
+      "Bash(Select-Object Name)",
+      "Bash(xargs grep *)"
     ]
   }
 }

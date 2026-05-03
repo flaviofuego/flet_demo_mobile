@@ -79,6 +79,7 @@ def t_course_manage_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             open=True,
             content=ft.Container(
                 bgcolor=TK_SURFACE, padding=24,
+                border_radius=ft.border_radius.only(top_left=20, top_right=20),
                 content=ft.Column(tight=True, spacing=16, controls=[
                     ft.Text("Nuevo curso", size=20, weight=ft.FontWeight.W_700,
                             color=TK_TEXT),

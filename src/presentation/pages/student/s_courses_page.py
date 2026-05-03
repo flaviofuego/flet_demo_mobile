@@ -132,6 +132,8 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             open=True,
             content=ft.Container(
                 padding=24,
+                bgcolor=SK_SURFACE,
+                border_radius=ft.border_radius.only(top_left=20, top_right=20),
                 content=ft.Column(tight=True, controls=[
                     ft.Row(spacing=12, controls=[
                         avatar_circle(initials, size=48, bg_color=SK_PRIMARY),
@@ -141,11 +143,29 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                             ft.Text(email, size=12, color=SK_TEXT_FAINT),
                         ]),
                     ]),
-                    ft.Divider(),
-                    ft.ListTile(
-                        leading=ft.Icon(ft.Icons.LOGOUT, color="#EF4444"),
-                        title=ft.Text("Cerrar sesión", color="#EF4444"),
-                        on_click=_logout,
+                    ft.Divider(color=SK_BORDER),
+                    ft.GestureDetector(
+                        on_tap=_logout,
+                        content=ft.Container(
+                            expand=True,
+                            bgcolor="#1AEF4444",
+                            border_radius=14,
+                            border=ft.Border.all(1, "#99EF4444"),
+                            padding=ft.padding.symmetric(vertical=14),
+                            alignment=ft.Alignment(0, 0),
+                            content=ft.Row(
+                                spacing=8,
+                                alignment=ft.MainAxisAlignment.CENTER,
+                                tight=True,
+                                controls=[
+                                    ft.Icon(ft.Icons.LOGOUT_ROUNDED,
+                                            size=16, color="#EF4444"),
+                                    ft.Text("Cerrar sesión", size=14,
+                                            weight=ft.FontWeight.W_700,
+                                            color="#EF4444"),
+                                ],
+                            ),
+                        ),
                     ),
                 ]),
             ),

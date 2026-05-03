@@ -66,6 +66,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             open=True,
             content=ft.Container(
                 bgcolor=TK_SURFACE, padding=16,
+                border_radius=ft.border_radius.only(top_left=20, top_right=20),
                 content=ft.Column(scroll=ft.ScrollMode.AUTO, controls=[
                     ft.Text("Selecciona un curso", size=16,
                             weight=ft.FontWeight.W_700, color=TK_TEXT),
@@ -103,6 +104,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
             open=True,
             content=ft.Container(
                 bgcolor=TK_SURFACE, padding=16,
+                border_radius=ft.border_radius.only(top_left=20, top_right=20),
                 content=ft.Column(scroll=ft.ScrollMode.AUTO, controls=[
                     ft.Text("Categoría de grupos", size=16,
                             weight=ft.FontWeight.W_700, color=TK_TEXT),
@@ -157,9 +159,9 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
         def _vis_card(label: str, subtitle: str, icon, val: str) -> ft.Container:
             sel        = vm.selected_visibility == val
-            icon_bg    = f"#33{TK_GOLD[1:]}" if val == "private" else TK_SURFACE_ALT
-            icon_color = TK_GOLD if val == "private" else TK_TEXT_FAINT
-            text_color = TK_GOLD if (val == "private" and sel) else TK_TEXT
+            icon_bg    = f"#33{TK_GOLD[1:]}" if sel else TK_SURFACE_ALT
+            icon_color = TK_GOLD if sel else TK_TEXT_FAINT
+            text_color = TK_GOLD if sel else TK_TEXT
             return ft.Container(
                 bgcolor=TK_SURFACE, border_radius=13,
                 border=ft.Border.all(1, TK_GOLD if sel else TK_BORDER),

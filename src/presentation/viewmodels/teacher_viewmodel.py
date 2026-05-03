@@ -132,9 +132,13 @@ class TeacherViewModel:
         course = next((c for c in self.courses if c.id == course_id), None)
         self.selected_course_name = course.name if course else ""
         try:
-            self.categories_for_course = self._course.get_categories_for_course(course_id)
+            cats = self._course.get_categories_for_course(course_id)
+            if not cats:
+                # CSV import stores course_id=0; fall back to all teacher categories
+                cats = self._group.get_all(self._teacher_id())
+            self.categories_for_course = cats
         except Exception:
-            self.categories_for_course = []
+            self.categories_for_course = list(self.categories)
         self._notify()
 
     def load_categories(self) -> None:
