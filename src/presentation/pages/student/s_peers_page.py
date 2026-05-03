@@ -52,10 +52,12 @@ def s_peers_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                                        ft.Text("Sin compañeros en esta evaluación", color=SK_TEXT_FAINT),
                                    ]))
 
-        submit_btn = ft.Button(
+        submit_btn = ft.ElevatedButton(
             f"Enviar evaluación ({vm.done_count}/{vm.total_peers})",
             disabled=not vm.all_evaluated,
-            style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF"),
+            style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF",
+                                 shape=ft.RoundedRectangleBorder(radius=30),
+                                 padding=ft.padding.symmetric(vertical=14)),
             on_click=_on_submit,
             expand=True,
         )

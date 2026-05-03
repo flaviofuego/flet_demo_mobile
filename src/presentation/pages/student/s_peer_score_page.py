@@ -61,10 +61,12 @@ def s_peer_score_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
             ]),
         )
 
-    save_btn = ft.Button(
+    save_btn = ft.ElevatedButton(
         "Guardar evaluación",
         expand=True,
-        style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF"),
+        style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF",
+                             shape=ft.RoundedRectangleBorder(radius=30),
+                             padding=ft.padding.symmetric(vertical=14)),
         disabled=not vm.all_criteria_scored,
         on_click=lambda _: (vm.save_peer_score(), page.go("/student/peers")),
     )

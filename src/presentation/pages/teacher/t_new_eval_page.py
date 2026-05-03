@@ -1,4 +1,4 @@
-﻿"""TNewEvalPage — create a new evaluation."""
+"""TNewEvalPage — create a new evaluation."""
 from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
@@ -8,109 +8,117 @@ from src.presentation.theme.app_colors import (
 from src.presentation.viewmodels.teacher_viewmodel import TeacherViewModel
 
 
-def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
-    content = ft.Container(expand=True)
+HOUR_OPTIONS = [24, 48, 72, 168]
 
+
+def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
+    content    = ft.Container(expand=True)
+    error_text = ft.Text("", color=TK_DANGER, size=12, visible=False)
     name_field = ft.TextField(
-        label="Nombre de la evaluación",
         value=vm.eval_name,
         focused_border_color=TK_GOLD,
+        border_color=TK_BORDER,
+        bgcolor=TK_SURFACE,
+        border_radius=12,
         on_change=lambda e: setattr(vm, "eval_name", e.control.value),
     )
-    error_text = ft.Text("", color=TK_DANGER, size=12, visible=False)
 
-    HOUR_OPTIONS = [24, 48, 72, 96, 120, 168]
-    VISIBILITY_OPTIONS = [("Privada", "private"), ("Pública", "public")]
+    def _section_label(text: str) -> ft.Text:
+        return ft.Text(text, size=10, weight=ft.FontWeight.W_600, color=TK_TEXT_FAINT)
 
-    def _hours_chips() -> ft.Row:
-        chips = []
-        for h in HOUR_OPTIONS:
-            selected = vm.selected_hours == h
-            def _pick(_, hours=h):
-                vm.selected_hours = hours
-                _refresh()
-            chips.append(ft.Container(
-                on_click=_pick,
-                bgcolor=TK_GOLD if selected else TK_SURFACE_ALT,
-                border_radius=8,
-                padding=ft.padding.symmetric(horizontal=12, vertical=6),
-                content=ft.Text(f"{h}h", size=12,
-                               color=TK_BACKGROUND if selected else TK_TEXT_FAINT,
-                               weight=ft.FontWeight.W_600),
-            ))
-        return ft.Row(wrap=True, spacing=6, controls=chips)
-
-    def _vis_chips() -> ft.Row:
-        chips = []
-        for label, val in VISIBILITY_OPTIONS:
-            selected = vm.selected_visibility == val
-            def _pick(_, v=val):
-                vm.selected_visibility = v
-                _refresh()
-            chips.append(ft.Container(
-                on_click=_pick,
-                bgcolor=TK_GOLD if selected else TK_SURFACE_ALT,
-                border_radius=8,
-                padding=ft.padding.symmetric(horizontal=12, vertical=6),
-                content=ft.Text(label, size=12,
-                               color=TK_BACKGROUND if selected else TK_TEXT_FAINT,
-                               weight=ft.FontWeight.W_600),
-            ))
-        return ft.Row(spacing=8, controls=chips)
+    def _selector_row(label: str, on_tap, disabled=False) -> ft.Container:
+        return ft.Container(
+            bgcolor=TK_SURFACE, border_radius=12,
+            border=ft.Border.all(1, TK_BORDER),
+            padding=ft.padding.symmetric(horizontal=16, vertical=16),
+            on_click=None if disabled else on_tap,
+            content=ft.Row(
+                alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
+                controls=[
+                    ft.Text(label, color=TK_TEXT_FAINT, size=14),
+                    ft.Icon(ft.Icons.CHEVRON_RIGHT, color=TK_TEXT_FAINT, size=18),
+                ],
+            ),
+        )
 
     def _course_picker_sheet() -> ft.BottomSheet:
-        def _pick(_, cid, cname):
-            vm.selected_course_id = cid
+        def _pick(cid, cname):
+            vm.selected_course_id   = cid
             vm.selected_course_name = cname
             page.run_thread(lambda: vm.load_categories_for_course(cid))
             page.pop_dialog()
 
-        tiles = [
-            ft.ListTile(title=ft.Text(c.name, color=TK_TEXT),
-                       on_click=lambda e, cid=c.id, cn=c.name: _pick(e, cid, cn))
-            for c in vm.courses
-        ]
-        bs = ft.BottomSheet(
+        if not vm.courses:
+            tiles: list[ft.Control] = [ft.Container(
+                padding=16,
+                content=ft.Text("Sin cursos creados", color=TK_TEXT_FAINT,
+                                 text_align=ft.TextAlign.CENTER),
+            )]
+        else:
+            tiles = [
+                ft.ListTile(
+                    title=ft.Text(c.name, color=TK_TEXT),
+                    on_click=lambda _, cid=c.id, cn=c.name: _pick(cid, cn),
+                )
+                for c in vm.courses
+            ]
+        return ft.BottomSheet(
             open=True,
-            content=ft.Container(bgcolor=TK_SURFACE, padding=16,
-                                content=ft.Column(scroll=ft.ScrollMode.AUTO, controls=[
-                                    ft.Text("Selecciona un curso", size=16,
-                                           weight=ft.FontWeight.W_700, color=TK_TEXT),
-                                    ft.Divider(color=TK_BORDER),
-                                    *tiles,
-                                ])),
+            content=ft.Container(
+                bgcolor=TK_SURFACE, padding=16,
+                content=ft.Column(scroll=ft.ScrollMode.AUTO, controls=[
+                    ft.Text("Selecciona un curso", size=16,
+                            weight=ft.FontWeight.W_700, color=TK_TEXT),
+                    ft.Divider(color=TK_BORDER),
+                    *tiles,
+                ]),
+            ),
         )
-        return bs
 
     def _category_picker_sheet() -> ft.BottomSheet:
-        def _pick(_, cid, cname):
+        def _pick(cid, cname):
             vm.selected_category_id   = cid
             vm.selected_category_name = cname
             page.pop_dialog()
             _refresh()
 
         cats = vm.categories_for_course
-        tiles = [
-            ft.ListTile(
-                title=ft.Text(c.name, color=TK_TEXT),
-                subtitle=ft.Text(f"{c.group_count} grupos · {c.member_count} miembros",
-                               color=TK_TEXT_FAINT, size=11),
-                on_click=lambda e, cid=c.id, cn=c.name: _pick(e, cid, cn),
-            )
-            for c in cats
-        ]
-        empty = [ft.Text("No hay categorías para este curso", color=TK_TEXT_FAINT)] if not cats else []
-        bs = ft.BottomSheet(
+        if not cats:
+            tiles2: list[ft.Control] = [ft.Container(
+                padding=16,
+                content=ft.Text("No hay categorías para este curso",
+                                 color=TK_TEXT_FAINT, text_align=ft.TextAlign.CENTER),
+            )]
+        else:
+            tiles2 = [
+                ft.ListTile(
+                    title=ft.Text(c.name, color=TK_TEXT),
+                    subtitle=ft.Text(f"{c.group_count} grupos · {c.member_count} miembros",
+                                     color=TK_TEXT_FAINT, size=11),
+                    on_click=lambda _, cid=c.id, cn=c.name: _pick(cid, cn),
+                )
+                for c in cats
+            ]
+        return ft.BottomSheet(
             open=True,
-            content=ft.Container(bgcolor=TK_SURFACE, padding=16,
-                                content=ft.Column(scroll=ft.ScrollMode.AUTO, controls=[
-                                    ft.Text("Selecciona categoría de grupos", size=16,
-                                           weight=ft.FontWeight.W_700, color=TK_TEXT),
-                                    ft.Divider(color=TK_BORDER),
-                                    *empty, *tiles,
-                                ])),
+            content=ft.Container(
+                bgcolor=TK_SURFACE, padding=16,
+                content=ft.Column(scroll=ft.ScrollMode.AUTO, controls=[
+                    ft.Text("Categoría de grupos", size=16,
+                            weight=ft.FontWeight.W_700, color=TK_TEXT),
+                    ft.Divider(color=TK_BORDER),
+                    *tiles2,
+                ]),
+            ),
         )
-        return bs
+
+    def _pick_hour(h: int) -> None:
+        vm.selected_hours = h
+        _refresh()
+
+    def _pick_vis(v: str) -> None:
+        vm.selected_visibility = v
+        _refresh()
 
     def _on_create(_) -> None:
         vm.eval_name = name_field.value or ""
@@ -125,53 +133,101 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         page.run_task(_run)
 
     def _build_body() -> ft.Control:
+        course_label = vm.selected_course_name or "Sin cursos creados"
+        if vm.selected_course_id is None:
+            cat_label = "Selecciona un curso primero"
+        else:
+            cat_label = vm.selected_category_name or "Selecciona una categoría"
+
+        hours_chips = ft.Row(spacing=6, controls=[
+            ft.GestureDetector(
+                on_tap=lambda _, h=h: _pick_hour(h),
+                content=ft.Container(
+                    bgcolor=TK_GOLD if vm.selected_hours == h else TK_SURFACE_ALT,
+                    border_radius=10,
+                    padding=ft.padding.symmetric(horizontal=16, vertical=8),
+                    content=ft.Text(
+                        f"{h}h", size=13, weight=ft.FontWeight.W_600,
+                        color=TK_BACKGROUND if vm.selected_hours == h else TK_TEXT_FAINT,
+                    ),
+                ),
+            )
+            for h in HOUR_OPTIONS
+        ])
+
+        def _vis_card(label: str, subtitle: str, icon, val: str) -> ft.Container:
+            sel        = vm.selected_visibility == val
+            icon_bg    = f"{TK_GOLD}33" if val == "private" else TK_SURFACE_ALT
+            icon_color = TK_GOLD if val == "private" else TK_TEXT_FAINT
+            text_color = TK_GOLD if (val == "private" and sel) else TK_TEXT
+            return ft.Container(
+                bgcolor=TK_SURFACE, border_radius=14,
+                border=ft.Border.all(1, TK_GOLD if sel else TK_BORDER),
+                padding=14, margin=ft.margin.only(bottom=8),
+                on_click=lambda _, v=val: _pick_vis(v),
+                content=ft.Row(spacing=12, controls=[
+                    ft.Container(
+                        width=40, height=40, bgcolor=icon_bg,
+                        border_radius=10, alignment=ft.Alignment(0, 0),
+                        content=ft.Icon(icon, color=icon_color, size=20),
+                    ),
+                    ft.Column(expand=True, spacing=2, controls=[
+                        ft.Text(label,    size=14, weight=ft.FontWeight.W_600, color=text_color),
+                        ft.Text(subtitle, size=11, color=TK_TEXT_FAINT),
+                    ]),
+                ]),
+            )
+
+        hint = "Selecciona una categoría primero" if vm.selected_category_id is None else ""
+
         return ft.ListView(
-            controls=[
-                ft.Text("NUEVA EVALUACIÓN", size=10, weight=ft.FontWeight.W_600,
-                       color=TK_TEXT_FAINT),
-                ft.Container(height=8),
-                name_field,
-                ft.Container(height=4),
-                ft.Text("Curso", size=12, color=TK_TEXT_FAINT),
-                ft.Button(
-                    vm.selected_course_name or "Seleccionar curso",
-                    style=ft.ButtonStyle(
-                        bgcolor=TK_GOLD if vm.selected_course_name else TK_SURFACE_ALT,
-                        color=TK_BACKGROUND if vm.selected_course_name else TK_TEXT,
-                    ),
-                    on_click=lambda _: page.show_dialog(_course_picker_sheet()),
-                    expand=True,
-                ),
-                ft.Container(height=4),
-                ft.Text("Grupos", size=12, color=TK_TEXT_FAINT),
-                ft.Button(
-                    vm.selected_category_name or "Seleccionar categoría",
-                    style=ft.ButtonStyle(
-                        bgcolor=TK_GOLD if vm.selected_category_name else TK_SURFACE_ALT,
-                        color=TK_BACKGROUND if vm.selected_category_name else TK_TEXT,
-                    ),
-                    on_click=lambda _: page.show_dialog(_category_picker_sheet()),
-                    expand=True,
-                    disabled=vm.selected_course_id is None,
-                ),
-                ft.Container(height=4),
-                ft.Text("Duración", size=12, color=TK_TEXT_FAINT),
-                _hours_chips(),
-                ft.Container(height=4),
-                ft.Text("Visibilidad de resultados", size=12, color=TK_TEXT_FAINT),
-                _vis_chips(),
-                ft.Container(height=16),
-                error_text,
-                ft.Button(
-                    "Creando..." if vm.is_loading else "Crear evaluación",
-                    style=ft.ButtonStyle(bgcolor=TK_GOLD, color=TK_BACKGROUND),
-                    expand=True,
-                    disabled=vm.is_loading,
-                    on_click=_on_create,
-                ),
-            ],
             expand=True,
             padding=ft.padding.symmetric(horizontal=16, vertical=12),
+            controls=[
+                _section_label("NOMBRE"),
+                ft.Container(height=4),
+                name_field,
+                ft.Container(height=12),
+                _section_label("CURSO"),
+                ft.Container(height=4),
+                _selector_row(course_label,
+                              lambda _: page.show_dialog(_course_picker_sheet())),
+                ft.Container(height=12),
+                _section_label("CATEGORÍA DE GRUPOS"),
+                ft.Container(height=4),
+                _selector_row(cat_label,
+                              lambda _: page.show_dialog(_category_picker_sheet()),
+                              disabled=vm.selected_course_id is None),
+                ft.Container(height=12),
+                _section_label("VENTANA DE TIEMPO"),
+                ft.Container(height=6),
+                hours_chips,
+                ft.Container(height=12),
+                _section_label("VISIBILIDAD DE RESULTADOS"),
+                ft.Container(height=6),
+                _vis_card("Pública",
+                          "Estudiantes ven sus promedios recibidos por criterio",
+                          ft.Icons.PEOPLE_OUTLINE, "public"),
+                _vis_card("Privada",
+                          "Solo el docente accede a los resultados detallados",
+                          ft.Icons.LOCK_OUTLINE, "private"),
+                ft.Container(height=8),
+                error_text,
+                ft.ElevatedButton(
+                    "Lanzar evaluación" if not vm.is_loading else "Creando...",
+                    expand=True,
+                    disabled=vm.is_loading,
+                    style=ft.ButtonStyle(
+                        bgcolor=TK_GOLD, color=TK_BACKGROUND,
+                        shape=ft.RoundedRectangleBorder(radius=30),
+                        padding=ft.padding.symmetric(vertical=14),
+                    ),
+                    on_click=_on_create,
+                ),
+                ft.Container(height=4),
+                ft.Text(hint, size=11, color=TK_TEXT_FAINT,
+                        text_align=ft.TextAlign.CENTER, visible=bool(hint)),
+            ],
         )
 
     def _refresh() -> None:
@@ -184,14 +240,34 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
     vm._notify = _notify
     content.content = _build_body()
 
+    back_btn = ft.GestureDetector(
+        on_tap=lambda _: page.go("/teacher/dash"),
+        content=ft.Container(
+            bgcolor=TK_SURFACE, border_radius=20,
+            padding=ft.padding.symmetric(horizontal=12, vertical=8),
+            content=ft.Row(spacing=4, tight=True, controls=[
+                ft.Icon(ft.Icons.CHEVRON_LEFT, size=16, color=TK_TEXT),
+                ft.Text("Volver", size=13, color=TK_TEXT),
+            ]),
+        ),
+    )
+
+    page_header = ft.Container(
+        padding=ft.padding.only(left=16, right=16, top=8, bottom=4),
+        content=ft.Column(spacing=8, controls=[
+            back_btn,
+            ft.Text("Nueva evaluación", size=24, weight=ft.FontWeight.W_800, color=TK_TEXT),
+        ]),
+    )
+
     return ft.View(
         route="/teacher/new-eval",
         bgcolor=TK_BACKGROUND,
-        appbar=ft.AppBar(
-            leading=ft.IconButton(ft.Icons.ARROW_BACK,
-                                 on_click=lambda _: page.go("/teacher/dash")),
-            title=ft.Text("Nueva evaluación", color=TK_TEXT),
-            bgcolor=TK_BACKGROUND, elevation=0,
-        ),
-        controls=[content],
+        controls=[
+            ft.SafeArea(
+                expand=True,
+                content=ft.Column(expand=True, spacing=0,
+                                  controls=[page_header, content]),
+            ),
+        ],
     )

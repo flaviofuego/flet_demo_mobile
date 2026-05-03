@@ -2,10 +2,10 @@
 from __future__ import annotations
 import flet as ft
 from src.presentation.theme.app_colors import (
-    SK_BACKGROUND, SK_SURFACE, SK_SURFACE_ALT, SK_BORDER,
-    SK_TEXT, SK_TEXT_FAINT, SK_PRIMARY, SK_PRIMARY_LIGHT,
-    TK_BACKGROUND, TK_SURFACE, TK_SURFACE_ALT as TK_SURFACE_ALT_,
-    TK_BORDER, TK_TEXT, TK_TEXT_FAINT, TK_GOLD, TK_GOLD_LIGHT, TK_DANGER,
+    SK_BACKGROUND, SK_SURFACE, SK_BORDER, SK_TEXT, SK_TEXT_FAINT,
+    SK_PRIMARY, SK_PRIMARY_LIGHT,
+    TK_BACKGROUND, TK_SURFACE, TK_BORDER as TK_BORDER_,
+    TK_TEXT as TK_TEXT_, TK_TEXT_FAINT as TK_TEXT_FAINT_, TK_GOLD,
 )
 from src.presentation.viewmodels.login_viewmodel import LoginViewModel
 from src.presentation.viewmodels.student_viewmodel import StudentViewModel
@@ -18,49 +18,86 @@ def login_page(
     student_vm: StudentViewModel,
     teacher_vm: TeacherViewModel,
 ) -> ft.View:
-    is_dark = [page.theme_mode == ft.ThemeMode.DARK]  # mutable via list
+    is_dark = [page.theme_mode != ft.ThemeMode.LIGHT]
 
-    def _is_dark() -> bool:
-        return is_dark[0]
+    def _bg()      -> str: return TK_BACKGROUND  if is_dark[0] else SK_BACKGROUND
+    def _surf()    -> str: return TK_SURFACE      if is_dark[0] else SK_SURFACE
+    def _border()  -> str: return TK_BORDER_      if is_dark[0] else SK_BORDER
+    def _text()    -> str: return TK_TEXT_        if is_dark[0] else SK_TEXT
+    def _faint()   -> str: return TK_TEXT_FAINT_  if is_dark[0] else SK_TEXT_FAINT
+    def _accent()  -> str: return TK_GOLD         if is_dark[0] else SK_PRIMARY
+    def _icon_bg() -> str: return f"{TK_GOLD}33"  if is_dark[0] else SK_PRIMARY_LIGHT
 
-    def _accent() -> str:
-        return TK_GOLD if _is_dark() else SK_PRIMARY
+    def _pill_style(bg: str, fg: str) -> ft.ButtonStyle:
+        return ft.ButtonStyle(
+            bgcolor=bg, color=fg,
+            shape=ft.RoundedRectangleBorder(radius=30),
+            padding=ft.padding.symmetric(vertical=14),
+        )
 
     email_field = ft.TextField(
         hint_text="Correo institucional",
         prefix_icon=ft.Icons.MAIL_OUTLINE_ROUNDED,
-        focused_border_color=SK_PRIMARY,
+        focused_border_color=_accent(),
+        border_color=_border(),
+        bgcolor=_surf(),
+        border_radius=12,
     )
     password_field = ft.TextField(
         hint_text="Contraseña",
         password=True,
         can_reveal_password=True,
         prefix_icon=ft.Icons.LOCK_OUTLINE_ROUNDED,
-        focused_border_color=SK_PRIMARY,
+        focused_border_color=_accent(),
+        border_color=_border(),
+        bgcolor=_surf(),
+        border_radius=12,
     )
     error_text = ft.Text("", color="#EF4444", size=12, visible=False)
-    login_btn = ft.Button(
+    login_btn  = ft.ElevatedButton(
         "Iniciar sesión",
         expand=True,
-        style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF"),
+        style=_pill_style(_accent(), TK_BACKGROUND),
     )
-    register_btn = ft.OutlinedButton("Crear cuenta", expand=True)
-    theme_btn = ft.IconButton(icon=ft.Icons.DARK_MODE_ROUNDED)
+    register_btn = ft.ElevatedButton(
+        "Crear cuenta",
+        expand=True,
+        style=ft.ButtonStyle(
+            bgcolor=_surf(), color=_text(),
+            shape=ft.RoundedRectangleBorder(radius=30),
+            side=ft.BorderSide(1, _border()),
+            padding=ft.padding.symmetric(vertical=14),
+        ),
+    )
+    theme_btn = ft.IconButton(
+        icon=ft.Icons.LIGHT_MODE_ROUNDED if is_dark[0] else ft.Icons.DARK_MODE_ROUNDED,
+        icon_color=_faint(),
+    )
+    icon_box = ft.Container(
+        width=44, height=44, border_radius=12,
+        bgcolor=_icon_bg(),
+        alignment=ft.Alignment(0, 0),
+        content=ft.Icon(ft.Icons.SCHOOL_ROUNDED, color=_accent(), size=24),
+    )
+    title_text      = ft.Text("Bienvenido a EvalUn", size=26, weight=ft.FontWeight.W_800, color=_text())
+    no_account_text = ft.Text("¿No tienes cuenta?", size=12, color=_faint(), text_align=ft.TextAlign.CENTER)
+    sso_text        = ft.Text("Autenticado por Roble SSO", size=11, color=_faint(), text_align=ft.TextAlign.CENTER)
+    card = ft.Container(
+        expand=True, bgcolor=_surf(), border_radius=20,
+        border=ft.Border.all(1, _border()), padding=24,
+    )
 
     def _notify() -> None:
-        error_text.value = login_vm.auth_error
+        error_text.value   = login_vm.auth_error
         error_text.visible = bool(login_vm.auth_error)
         login_btn.disabled = login_vm.is_loading
-        login_btn.content = "Iniciando..." if login_vm.is_loading else "Iniciar sesión"
         page.update()
 
     login_vm._notify = _notify
 
     def _on_login(_) -> None:
         async def _do() -> None:
-            result = login_vm.login(
-                email_field.value or "", password_field.value or ""
-            )
+            result = login_vm.login(email_field.value or "", password_field.value or "")
             if result is None:
                 return
             if result.role.value == "teacher":
@@ -79,75 +116,56 @@ def login_page(
     def _toggle_theme(_) -> None:
         is_dark[0] = not is_dark[0]
         page.theme_mode = ft.ThemeMode.DARK if is_dark[0] else ft.ThemeMode.LIGHT
-        theme_btn.icon = (
-            ft.Icons.LIGHT_MODE_ROUNDED if is_dark[0] else ft.Icons.DARK_MODE_ROUNDED
-        )
-        email_field.focused_border_color = _accent()
+        theme_btn.icon       = ft.Icons.LIGHT_MODE_ROUNDED if is_dark[0] else ft.Icons.DARK_MODE_ROUNDED
+        theme_btn.icon_color = _faint()
+        email_field.focused_border_color    = _accent()
+        email_field.border_color            = _border()
+        email_field.bgcolor                 = _surf()
         password_field.focused_border_color = _accent()
-        login_btn.style = ft.ButtonStyle(bgcolor=_accent(), color="#FFFFFF")
-        view.bgcolor = TK_BACKGROUND if is_dark[0] else SK_BACKGROUND
+        password_field.border_color         = _border()
+        password_field.bgcolor              = _surf()
+        login_btn.style    = _pill_style(_accent(), TK_BACKGROUND)
+        register_btn.style = ft.ButtonStyle(
+            bgcolor=_surf(), color=_text(),
+            shape=ft.RoundedRectangleBorder(radius=30),
+            side=ft.BorderSide(1, _border()),
+            padding=ft.padding.symmetric(vertical=14),
+        )
+        icon_box.bgcolor           = _icon_bg()
+        icon_box.content.color     = _accent()
+        card.bgcolor               = _surf()
+        card.border                = ft.Border.all(1, _border())
+        title_text.color           = _text()
+        no_account_text.color      = _faint()
+        sso_text.color             = _faint()
+        view.bgcolor               = _bg()
         page.update()
 
-    login_btn.on_click = _on_login
+    login_btn.on_click    = _on_login
     register_btn.on_click = _on_register
-    theme_btn.on_click = _toggle_theme
+    theme_btn.on_click    = _toggle_theme
+
+    card.content = ft.Column(
+        scroll=ft.ScrollMode.AUTO, expand=True, spacing=12,
+        controls=[
+            ft.Row(controls=[icon_box, ft.Container(expand=True), theme_btn]),
+            title_text,
+            ft.Container(height=2),
+            email_field,
+            password_field,
+            error_text,
+            login_btn,
+            no_account_text,
+            register_btn,
+            ft.Container(height=4),
+            sso_text,
+        ],
+    )
 
     view = ft.View(
         route="/login",
-        bgcolor=SK_BACKGROUND,
+        bgcolor=_bg(),
         padding=24,
-        controls=[
-            ft.SafeArea(
-                expand=True,
-                content=ft.Container(
-                    expand=True,
-                    bgcolor=SK_SURFACE,
-                    border_radius=18,
-                    border=ft.Border.all(1, SK_BORDER),
-                    padding=20,
-                    content=ft.Column(
-                        scroll=ft.ScrollMode.AUTO,
-                        expand=True,
-                        spacing=10,
-                        controls=[
-                            ft.Row(
-                                controls=[
-                                    ft.Container(
-                                        width=44, height=44,
-                                        bgcolor=SK_PRIMARY_LIGHT,
-                                        border_radius=12,
-                                        alignment=ft.Alignment(0, 0),
-                                        content=ft.Icon(ft.Icons.SCHOOL_ROUNDED, color=SK_PRIMARY, size=24),
-                                    ),
-                                    ft.Container(expand=True),
-                                    theme_btn,
-                                ]
-                            ),
-                            ft.Text(
-                                "Bienvenido a EvalUn",
-                                size=24, weight=ft.FontWeight.W_800, color=SK_TEXT,
-                            ),
-                            ft.Container(height=4),
-                            email_field,
-                            password_field,
-                            error_text,
-                            login_btn,
-                            ft.Text(
-                                "¿No tienes cuenta?",
-                                size=12, color=SK_TEXT_FAINT,
-                                text_align=ft.TextAlign.CENTER,
-                            ),
-                            register_btn,
-                            ft.Container(height=4),
-                            ft.Text(
-                                "Autenticado por Roble SSO",
-                                size=11, color=SK_TEXT_FAINT,
-                                text_align=ft.TextAlign.CENTER,
-                            ),
-                        ],
-                    ),
-                ),
-            )
-        ],
+        controls=[ft.SafeArea(expand=True, content=card)],
     )
     return view

@@ -5,6 +5,7 @@ from src.presentation.theme.app_colors import (
     TK_BACKGROUND, TK_SURFACE, TK_BORDER, TK_TEXT, TK_TEXT_FAINT,
     TK_GOLD, TK_GOLD_LIGHT, TK_DANGER,
 )
+from src.presentation.pages.teacher.t_dash_page import _teacher_navbar
 from src.presentation.components.avatar_circle import avatar_circle
 from src.presentation.viewmodels.teacher_viewmodel import TeacherViewModel
 
@@ -19,15 +20,7 @@ def t_profile_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         vm.logout()
         await page.push_route("/login")
 
-    nav = ft.NavigationBar(
-        bgcolor=TK_SURFACE, indicator_color=TK_GOLD_LIGHT, selected_index=1,
-        destinations=[
-            ft.NavigationBarDestination(icon=ft.Icons.DASHBOARD_OUTLINED, label="Inicio"),
-            ft.NavigationBarDestination(icon=ft.Icons.UPLOAD_FILE_OUTLINED, label="Importar"),
-            ft.NavigationBarDestination(icon=ft.Icons.BOOK_OUTLINED, label="Cursos"),
-        ],
-        on_change=lambda e: page.go(["/teacher/dash", "/teacher/import", "/teacher/courses"][e.control.selected_index]),
-    )
+    nav = _teacher_navbar(page, 0)
 
     return ft.View(
         route="/teacher/profile",

@@ -40,9 +40,10 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
 
         actions = []
         if ev.is_active and status == EvalStudentStatus.active_pending:
-            actions.append(ft.Button(
+            actions.append(ft.ElevatedButton(
                 "Evaluar", on_click=_evaluate,
-                style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF"),
+                style=ft.ButtonStyle(bgcolor=SK_PRIMARY, color="#FFFFFF",
+                                     shape=ft.RoundedRectangleBorder(radius=10)),
             ))
         actions.append(ft.OutlinedButton("Resultados", on_click=_results))
 
@@ -85,11 +86,12 @@ def s_courses_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
                     alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
                     controls=[
                         ft.Text(f"{vm.done_count}/{vm.total_peers} evaluados", size=11, color="#EEEFFE"),
-                        ft.Button(
+                        ft.ElevatedButton(
                             "Completada" if status == EvalStudentStatus.active_completed else "Evaluar ahora",
                             disabled=status == EvalStudentStatus.active_completed,
                             on_click=_on_evaluate,
-                            style=ft.ButtonStyle(bgcolor="#FFFFFF", color=SK_PRIMARY),
+                            style=ft.ButtonStyle(bgcolor="#FFFFFF", color=SK_PRIMARY,
+                                                 shape=ft.RoundedRectangleBorder(radius=20)),
                         ),
                     ],
                 ),

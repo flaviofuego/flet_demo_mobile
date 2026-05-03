@@ -14,7 +14,10 @@
       "Bash(python -c \"import flet as ft; print\\([m for m in dir\\(ft.Page\\) if 'open' in m.lower\\(\\) or 'dialog' in m.lower\\(\\) or 'sheet' in m.lower\\(\\) or 'close' in m.lower\\(\\)]\\)\")",
       "Bash(python -c \"import flet as ft; import inspect; sig = inspect.signature\\(ft.Page.show_dialog\\); print\\(sig\\)\")",
       "Bash(python -c \"import flet as ft; import inspect; sig = inspect.signature\\(ft.Page.pop_dialog\\); print\\(sig\\)\")",
-      "Bash(python -c \"import flet as ft; import inspect; sig = inspect.signature\\(ft.BottomSheet.__init__\\); print\\(list\\(sig.parameters.keys\\(\\)\\)\\)\")"
+      "Bash(python -c \"import flet as ft; import inspect; sig = inspect.signature\\(ft.BottomSheet.__init__\\); print\\(list\\(sig.parameters.keys\\(\\)\\)\\)\")",
+      "Bash(python -c \"import flet as ft; print\\(hasattr\\(ft, 'GestureDetector'\\)\\); import inspect; sig = inspect.signature\\(ft.ButtonStyle.__init__\\); print\\(list\\(sig.parameters.keys\\(\\)\\)[:15]\\)\")",
+      "Bash(python -c \"import flet as ft; print\\(ft.Colors.TRANSPARENT\\)\")",
+      "Bash(python -m py_compile src/presentation/pages/auth/login_page.py src/presentation/pages/auth/register_page.py src/presentation/pages/teacher/t_dash_page.py src/presentation/pages/teacher/t_import_page.py src/presentation/pages/teacher/t_course_manage_page.py src/presentation/pages/teacher/t_new_eval_page.py src/presentation/pages/teacher/t_results_page.py src/presentation/pages/student/s_courses_page.py src/presentation/pages/student/s_peers_page.py src/presentation/pages/student/s_peer_score_page.py)"
     ]
   }
 }

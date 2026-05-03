@@ -43,7 +43,7 @@ from src.presentation.pages.teacher.t_course_manage_page import t_course_manage_
 
 def main(page: ft.Page) -> None:
     page.title = "EvalUn"
-    page.theme_mode = ft.ThemeMode.SYSTEM
+    page.theme_mode = ft.ThemeMode.DARK
     page.padding = 0
 
     # ── Dependency injection ───────────────────────────────────────────────────
