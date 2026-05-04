@@ -42,7 +42,7 @@ class TeacherViewModel:
         self.evaluations: list[Evaluation] = []
         self.active_eval: Evaluation | None = None
 
-        self.eval_name: str = "Sprint 2 Review"
+        self.eval_name: str = ""
         self.selected_hours: int = 48
         self.selected_visibility: str = "private"
         self.selected_category_id: int | None = None
@@ -143,14 +143,21 @@ class TeacherViewModel:
 
     def load_categories(self) -> None:
         try:
-            cats = self._group.get_all(self._teacher_id())
-            self.categories = cats
-            if cats and self.selected_category_id is None:
-                self.selected_category_id = cats[0].id
-                self.selected_category_name = cats[0].name
+            self.categories = self._group.get_all(self._teacher_id())
         except Exception:
             self.categories = []
         self._notify()
+
+    def reset_eval_form(self) -> None:
+        self.eval_name = ""
+        self.selected_course_id = None
+        self.selected_course_name = ""
+        self.selected_category_id = None
+        self.selected_category_name = ""
+        self.categories_for_course = []
+        self.selected_hours = 48
+        self.selected_visibility = "private"
+        self.eval_error = ""
 
     def import_csv(self, csv_content: str, category_name: str, course_id: int) -> None:
         self.import_loading = True

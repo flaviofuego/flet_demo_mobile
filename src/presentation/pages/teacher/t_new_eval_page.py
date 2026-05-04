@@ -183,7 +183,7 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
 
         hint = "Selecciona una categoría primero" if vm.selected_category_id is None else ""
 
-        disabled = vm.is_loading or vm.selected_category_id is None
+        disabled = vm.is_loading or vm.selected_course_id is None or vm.selected_category_id is None
         launch_btn = ft.GestureDetector(
             on_tap=(lambda _: None) if disabled else _on_create,
             content=ft.Container(
@@ -248,6 +248,8 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         _refresh()
 
     vm._notify = _notify
+    vm.reset_eval_form()
+    name_field.value = vm.eval_name
     content.content = _build_body()
 
     back_btn = ft.GestureDetector(
