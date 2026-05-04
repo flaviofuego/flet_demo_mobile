@@ -278,12 +278,14 @@ def t_new_eval_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         controls=[
             ft.SafeArea(
                 expand=True,
-                content=ft.Column(expand=True, spacing=0,
-                                  controls=[
-                                      page_header,
-                                      ft.Divider(height=1, color=TK_BORDER),
-                                      content,
-                                  ]),
+                content=ft.Column(
+                    expand=True, spacing=0,
+                    horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+                    controls=[
+                        page_header,
+                        ft.Divider(height=1, color=TK_BORDER),
+                        content,
+                    ]),
             ),
         ],
     )

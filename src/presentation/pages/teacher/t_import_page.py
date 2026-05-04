@@ -293,13 +293,15 @@ def t_import_page(page: ft.Page, vm: TeacherViewModel) -> ft.View:
         controls=[
             ft.SafeArea(
                 expand=True,
-                content=ft.Column(expand=True, spacing=0,
-                                  controls=[
-                                      header,
-                                      ft.Divider(height=1, color=TK_BORDER),
-                                      title_block,
-                                      content,
-                                  ]),
+                content=ft.Column(
+                    expand=True, spacing=0,
+                    horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
+                    controls=[
+                        header,
+                        ft.Divider(height=1, color=TK_BORDER),
+                        title_block,
+                        content,
+                    ]),
             ),
         ],
     )

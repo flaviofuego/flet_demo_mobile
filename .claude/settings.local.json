@@ -30,7 +30,8 @@
       "Bash(git commit -m ' *)",
       "Bash(Get-ChildItem -Path \"E:\\\\Repos Git\\\\flet_demo_mobile\" -Directory)",
       "Bash(Select-Object Name)",
-      "Bash(xargs grep *)"
+      "Bash(xargs grep *)",
+      "Bash(python -m pytest tests/ -v --tb=short)"
     ]
   }
 }
