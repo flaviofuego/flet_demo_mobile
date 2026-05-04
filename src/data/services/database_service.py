@@ -1,4 +1,4 @@
-"""Local SQLite persistence — schema version 6, matching peerUn Flutter app."""
+"""Local SQLite persistence — schema version 7, matching peerUn Flutter app."""
 from __future__ import annotations
 
 import os
@@ -9,7 +9,7 @@ _DEFAULT_PATH = os.path.join(os.path.expanduser("~"), ".evalun", "peereval.db")
 
 
 class DatabaseService:
-    """Opens and maintains a SQLite connection with the peerUn v6 schema.
+    """Opens and maintains a SQLite connection with the peerUn v7 schema.
 
     Args:
         db_path: Path to the database file. Override in tests with a tmp_path.
@@ -159,7 +159,7 @@ class DatabaseService:
                 "CREATE UNIQUE INDEX IF NOT EXISTS uq_eval_response "
                 "ON evaluation_responses(eval_id, evaluator_id, evaluated_member_id, criterion_id)"
             )
-        except sqlite3.OperationalError:
+        except (sqlite3.OperationalError, sqlite3.IntegrityError):
             pass
 
     @staticmethod
