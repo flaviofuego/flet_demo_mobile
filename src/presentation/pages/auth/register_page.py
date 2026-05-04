@@ -76,12 +76,14 @@ def register_page(
         def _tab(idx: int, label: str) -> ft.GestureDetector:
             sel = sel_tab[0] == idx
             return ft.GestureDetector(
+                expand=True,
                 on_tap=lambda _: _select_tab(idx),
                 content=ft.Container(
                     expand=True,
                     bgcolor=_accent() if sel else ft.Colors.TRANSPARENT,
                     border_radius=10,
                     padding=ft.padding.symmetric(vertical=10),
+                    alignment=ft.Alignment(0, 0),
                     content=ft.Text(
                         label,
                         text_align=ft.TextAlign.CENTER,
@@ -92,7 +94,7 @@ def register_page(
             )
         return ft.Container(
             bgcolor=_surf_alt(), border_radius=14, padding=4,
-            content=ft.Row(spacing=0, controls=[_tab(0, "Estudiante"), _tab(1, "Profesor")]),
+            content=ft.Row(spacing=0, expand=True, controls=[_tab(0, "Estudiante"), _tab(1, "Profesor")]),
         )
 
     def _select_tab(idx: int) -> None:
@@ -172,6 +174,7 @@ def register_page(
     card.border      = ft.Border.all(1, _border())
     card.content     = ft.Column(
         scroll=ft.ScrollMode.AUTO, spacing=12,
+        horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
         controls=[
             ft.Row(controls=[icon_box, ft.Container(expand=True), theme_btn]),
             ft.Text("Crear cuenta", size=26, weight=ft.FontWeight.W_800, color=_text()),

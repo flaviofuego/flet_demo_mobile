@@ -151,6 +151,7 @@ def login_page(
 
     card.content = ft.Column(
         scroll=ft.ScrollMode.AUTO, expand=True, spacing=12,
+        horizontal_alignment=ft.CrossAxisAlignment.STRETCH,
         controls=[
             ft.Row(controls=[icon_box, ft.Container(expand=True), theme_btn]),
             title_text,

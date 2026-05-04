@@ -31,7 +31,29 @@
       "Bash(Get-ChildItem -Path \"E:\\\\Repos Git\\\\flet_demo_mobile\" -Directory)",
       "Bash(Select-Object Name)",
       "Bash(xargs grep *)",
-      "Bash(python -m pytest tests/ -v --tb=short)"
+      "Bash(python -m pytest tests/ -v --tb=short)",
+      "Bash(python -m pytest tests/presentation/test_score_color.py -v)",
+      "Bash(git commit *)",
+      "Bash(python -m pytest --tb=short -q)",
+      "Bash(python -m pytest tests/data/test_evaluation_repository.py::test_save_responses_idempotent -v)",
+      "Bash(python -m pytest tests/data/test_evaluation_repository.py tests/data/test_database_service.py -v)",
+      "Bash(git show *)",
+      "Bash(python -m pytest tests/data/test_database_service.py::test_evaluation_responses_has_unique_constraint -xvs)",
+      "Bash(python -m pytest tests/data/test_evaluation_repository.py::test_save_responses_idempotent -xvs)",
+      "Bash(python -m pytest tests/data/test_database_service.py -xvs)",
+      "Bash(python -m pytest tests/data/test_evaluation_repository.py -xvs)",
+      "Bash(python -m pytest tests/presentation/test_teacher_viewmodel.py -v)",
+      "Bash(python -m pytest --co -q)",
+      "Bash(python -m pytest --tb=short)",
+      "Bash(python -m pytest tests/presentation/test_teacher_viewmodel.py::test_load_categories_does_not_auto_select -xvs)",
+      "Bash(python -m pytest tests/presentation/test_student_viewmodel.py -v --tb=short)",
+      "Bash(python -m pytest tests/presentation/test_student_viewmodel.py -v)",
+      "Bash(python -m pytest tests/presentation/test_student_viewmodel.py::test_submit_evaluation_saves_responses_to_db -xvs)",
+      "Bash(python -m pytest tests/presentation/test_student_viewmodel.py::test_submit_evaluation_is_idempotent tests/presentation/test_student_viewmodel.py::test_submit_evaluation_updates_eval_status tests/presentation/test_student_viewmodel.py::test_select_eval_for_results_loads_my_results -xvs)",
+      "Bash(python -m pytest tests/presentation/test_student_viewmodel.py::test_submit_evaluation_saves_responses_to_db tests/presentation/test_student_viewmodel.py::test_submit_evaluation_is_idempotent -xvs)",
+      "Bash(python -m pytest tests/presentation/test_student_viewmodel.py::test_submit_evaluation_saves_responses_to_db tests/presentation/test_student_viewmodel.py::test_submit_evaluation_is_idempotent tests/presentation/test_student_viewmodel.py::test_submit_evaluation_updates_eval_status tests/presentation/test_student_viewmodel.py::test_select_eval_for_results_loads_my_results -v --tb=short)",
+      "Bash(python3)",
+      "Bash(python -m pytest tests/presentation/test_student_viewmodel.py::test_select_eval_for_results_loads_my_results -xvs)"
     ]
   }
 }
