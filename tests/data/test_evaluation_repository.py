@@ -90,3 +90,20 @@ def test_get_my_results(setup):
     results = eval_repo.get_my_results(ev.id, "bob@uni.edu")
     assert len(results) == 4
     assert all(r.value == 4.0 for r in results)
+
+
+def test_save_responses_idempotent(setup):
+    db, eval_repo, cat = setup
+    ev = eval_repo.create("Eval 1", cat.id, hours=48, visibility="public", teacher_id=1)
+    conn = db.connect()
+    ana = conn.execute("SELECT id FROM students WHERE email='ana@uni.edu'").fetchone()
+    bob = conn.execute("SELECT id FROM group_members WHERE LOWER(username)='bob@uni.edu'").fetchone()
+    scores = {"punct": 4, "contrib": 3, "commit": 5, "attitude": 4}
+    # submit twice — should not duplicate rows
+    eval_repo.save_responses(ev.id, ana["id"], bob["id"], scores)
+    eval_repo.save_responses(ev.id, ana["id"], bob["id"], scores)
+    rows = conn.execute(
+        "SELECT COUNT(*) AS cnt FROM evaluation_responses WHERE eval_id=? AND evaluator_id=? AND evaluated_member_id=?",
+        (ev.id, ana["id"], bob["id"]),
+    ).fetchone()
+    assert rows["cnt"] == 4, f"Expected 4 rows (one per criterion), got {rows['cnt']}"

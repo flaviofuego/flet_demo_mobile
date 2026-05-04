@@ -124,7 +124,8 @@ class EvaluationRepositoryImpl(IEvaluationRepository):
         conn = self._conn()
         for criterion_id, score in scores.items():
             conn.execute(
-                "INSERT INTO evaluation_responses (eval_id, evaluator_id, evaluated_member_id, criterion_id, score) VALUES (?,?,?,?,?)",
+                "INSERT OR REPLACE INTO evaluation_responses "
+                "(eval_id, evaluator_id, evaluated_member_id, criterion_id, score) VALUES (?,?,?,?,?)",
                 (eval_id, evaluator_student_id, evaluated_member_id, criterion_id, score),
             )
         conn.commit()

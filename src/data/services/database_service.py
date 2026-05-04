@@ -51,8 +51,10 @@ class DatabaseService:
             self._upgrade_v5(conn)
         if user_version < 6:
             self._upgrade_v6(conn)
+        if user_version < 7:
+            self._upgrade_v7(conn)
 
-        conn.execute("PRAGMA user_version = 6")
+        conn.execute("PRAGMA user_version = 7")
         conn.commit()
 
     @staticmethod
@@ -149,6 +151,16 @@ class DatabaseService:
                 conn.execute(stmt)
             except sqlite3.OperationalError:
                 pass  # column already exists
+
+    @staticmethod
+    def _upgrade_v7(conn: sqlite3.Connection) -> None:
+        try:
+            conn.execute(
+                "CREATE UNIQUE INDEX IF NOT EXISTS uq_eval_response "
+                "ON evaluation_responses(eval_id, evaluator_id, evaluated_member_id, criterion_id)"
+            )
+        except sqlite3.OperationalError:
+            pass
 
     @staticmethod
     def _upgrade_v6(conn: sqlite3.Connection) -> None:

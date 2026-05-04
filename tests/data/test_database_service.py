@@ -41,10 +41,39 @@ def test_students_table_has_unique_email(db_service):
         )
 
 
-def test_schema_version_is_6(db_service):
-    db = db_service.connect()
-    version = db.execute("PRAGMA user_version").fetchone()[0]
-    assert version == 6
+def test_schema_version_is_7(tmp_path):
+    db = DatabaseService(db_path=str(tmp_path / "test.db"))
+    conn = db.connect()
+    version = conn.execute("PRAGMA user_version").fetchone()[0]
+    assert version == 7
+
+
+def test_evaluation_responses_has_unique_constraint(tmp_path):
+    db = DatabaseService(db_path=str(tmp_path / "test.db"))
+    conn = db.connect()
+    # Insert prerequisite rows to satisfy FK constraints
+    conn.execute(
+        "INSERT INTO group_categories (name, imported_at, teacher_id, course_id) VALUES ('Cat', 0, 1, 0)"
+    )
+    conn.execute(
+        "INSERT INTO evaluations (name, category_id, hours, visibility, created_at, closes_at, teacher_id) "
+        "VALUES ('E', 1, 48, 'public', 1000, 2000, 1)"
+    )
+    conn.execute(
+        "INSERT OR REPLACE INTO evaluation_responses (eval_id, evaluator_id, evaluated_member_id, criterion_id, score) "
+        "VALUES (1, 1, 1, 'punct', 4)"
+    )
+    # Second INSERT OR REPLACE should update, not duplicate
+    conn.execute(
+        "INSERT OR REPLACE INTO evaluation_responses (eval_id, evaluator_id, evaluated_member_id, criterion_id, score) "
+        "VALUES (1, 1, 1, 'punct', 5)"
+    )
+    conn.commit()
+    rows = conn.execute(
+        "SELECT COUNT(*) AS cnt, score FROM evaluation_responses WHERE eval_id=1 AND criterion_id='punct'"
+    ).fetchone()
+    assert rows["cnt"] == 1
+    assert rows["score"] == 5
 
 
 def test_courses_table_exists_with_correct_columns(db_service):
