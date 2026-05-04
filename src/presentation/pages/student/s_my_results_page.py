@@ -12,7 +12,7 @@ def s_my_results_page(page: ft.Page, vm: StudentViewModel) -> ft.View:
     content = ft.Container(expand=True)
 
     def _score_color(avg: float) -> str:
-        if avg >= 4.0: return _SK_SUCCESS
+        if avg >= 4.0: return SK_SUCCESS
         if avg >= 3.0: return SK_PRIMARY
         if avg >= 2.5: return "#F59E0B"
         return "#EF4444"
