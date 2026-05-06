@@ -5,7 +5,15 @@ import os
 import sqlite3
 
 
-_DEFAULT_PATH = os.path.join(os.path.expanduser("~"), ".evalun", "peereval.db")
+def _default_db_path() -> str:
+    """Resolve DB path: Flet mobile/embed sets FLET_APP_STORAGE_DATA; desktop uses ~/.evalun."""
+    storage = os.environ.get("FLET_APP_STORAGE_DATA")
+    if storage:
+        return os.path.join(storage, ".evalun", "peereval.db")
+    return os.path.join(os.path.expanduser("~"), ".evalun", "peereval.db")
+
+
+_DEFAULT_PATH = _default_db_path()
 
 
 class DatabaseService:
