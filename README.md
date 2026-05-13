@@ -1,3 +1,9 @@
+
+# Link diapos expo
+"https://canva.link/gl4rph69l6hgt0m"
+
+
+
 # EvalUn
 
 **EvalUn** — Evaluación entre pares en Flet (peerUn Python port). A peer-assessment mobile application built with **Clean Architecture** principles.
